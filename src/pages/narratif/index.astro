@@ -1,0 +1,276 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import films from '../../data/narratif.json';
+---
+
+<Layout title="Narratif — Pablo Martin">
+
+  <div class="page-header">
+    <a href="/" class="retour">← Accueil</a>
+    <h1 class="page-titre">Narratif</h1>
+    <p class="page-sous-titre">Courts-métrages · Fiction · Documentaire</p>
+  </div>
+
+  <nav class="onglets">
+    <a href="/narratif" class="onglet actif">Narratif</a>
+    <a href="/musique" class="onglet">Musique</a>
+    <a href="/video" class="onglet">Vidéo</a>
+    <a href="/etalonnage" class="onglet">Étalonnage</a>
+    <a href="/actu" class="onglet">Actu</a>
+    <a href="/contact" class="onglet">Contact</a>
+  </nav>
+
+  <section class="films-liste">
+    {films.map((film) => (
+      <article class="film-card">
+        <a href={`/narratif/${film.slug}`} class="film-visuel">
+          <div class="film-cover">
+            <img src={film.cover} alt={film.titre} loading="lazy" />
+            <div class="film-cover-overlay">
+              <span class="voir-projet">Voir le projet →</span>
+            </div>
+          </div>
+          <div class="film-mosaique">
+            {film.photos.slice(0, 6).map((photo, i) => (
+              <div class="mosaique-item">
+                <img src={photo} alt={`${film.titre} — photo ${i + 1}`} loading="lazy" />
+              </div>
+            ))}
+          </div>
+        </a>
+        <div class="film-infos">
+          <div class="film-meta">
+            <span class="film-annee">{film.annee}</span>
+            {film.duree && <span class="film-duree">{film.duree}</span>}
+          </div>
+          <h2 class="film-titre">
+            <a href={`/narratif/${film.slug}`}>{film.titre}</a>
+          </h2>
+          <div class="film-roles">
+            {film.roles.map((role) => (
+              <span class="role-tag">{role}</span>
+            ))}
+          </div>
+          <p class="film-synopsis">{film.synopsis}</p>
+        </div>
+        <div class="film-separateur"></div>
+      </article>
+    ))}
+  </section>
+
+</Layout>
+
+<style>
+  .page-header {
+    padding: 48px 56px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .retour {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.2s;
+    display: inline-block;
+    margin-bottom: 24px;
+  }
+  .retour:hover { color: var(--accent); }
+
+  .page-titre {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .page-sous-titre {
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 10px;
+  }
+
+  .onglets {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding: 0 56px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .onglets::-webkit-scrollbar { display: none; }
+
+  .onglet {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 20px 24px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .onglet:hover { color: var(--text); }
+  .onglet.actif {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .films-liste {
+    padding: 64px 56px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .film-card {
+    padding: 48px 0;
+  }
+
+  .film-separateur {
+    height: 1px;
+    background: var(--border);
+    margin-top: 48px;
+  }
+  .film-card:last-child .film-separateur {
+    display: none;
+  }
+
+  .film-visuel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 28px;
+    cursor: pointer;
+  }
+
+  .film-cover {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--bg-surface);
+  }
+
+  .film-cover img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease, filter 0.4s ease;
+    filter: saturate(0.75);
+  }
+
+  .film-cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 31, 46, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .voir-projet {
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 10px 24px;
+  }
+
+  .film-visuel:hover .film-cover img {
+    transform: scale(1.03);
+    filter: saturate(1);
+  }
+  .film-visuel:hover .film-cover-overlay {
+    opacity: 1;
+  }
+
+  .film-mosaique {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .mosaique-item {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--bg-surface);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mosaique-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease, filter 0.4s ease;
+    filter: saturate(0.7);
+  }
+  .film-visuel:hover .mosaique-item img {
+    filter: saturate(0.9);
+  }
+
+  .film-infos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .film-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .film-annee {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+
+  .film-duree {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .film-titre {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--text);
+  }
+  .film-titre a:hover { color: var(--accent); }
+
+  .film-roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .role-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+  }
+
+  .film-synopsis {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 680px;
+  }
+</style>

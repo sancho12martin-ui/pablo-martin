@@ -1,0 +1,82 @@
+[
+    {
+    "slug": "gurb",
+    "titre": "Gurb",
+    "annee": 2025,
+    "duree": "",
+    "roles": ["Chef Opérateur"],
+    "synopsis": "À compléter.",
+    "youtube": null,
+    "vimeo": null,
+    "cover": "/images/narratif/Gurb/Principale.png",
+    "photos": [
+      "/images/narratif/Gurb/1.png",
+      "/images/narratif/Gurb/2.png",
+      "/images/narratif/Gurb/3.png",
+      "/images/narratif/Gurb/4.png",
+      "/images/narratif/Gurb/5.png",
+      "/images/narratif/Gurb/6.png",
+      "/images/narratif/Gurb/7.png",
+      "/images/narratif/Gurb/8.png",
+      "/images/narratif/Gurb/9.png",
+      "/images/narratif/Gurb/10.png",
+      "/images/narratif/Gurb/11.png",
+      "/images/narratif/Gurb/12.png"
+    ],
+    "crew": {
+      "Réalisateur": "À compléter",
+      "Chef Opérateur": "Pablo Martin",
+      "Monteur": "À compléter",
+      "Son": "À compléter",
+      "Musique": "À compléter"
+    },
+    "specs": {
+      "Format": "À compléter",
+      "Caméra": "À compléter",
+      "Optiques": "À compléter",
+      "Étalonnage": "À compléter",
+      "Lieu de tournage": "À compléter",
+      "Durée": "À compléter"
+    }
+  },
+  {
+    "slug": "edredon-sensible",
+    "titre": "Édredon Sensible",
+    "annee": 2024,
+    "duree": "12 min",
+    "roles": ["Chef Opérateur", "Réalisateur"],
+    "synopsis": "À compléter — décrivez ici l'histoire du film en quelques lignes.",
+    "youtube": null,
+    "vimeo": null,
+    "cover": "/images/narratif/CAPTURES_EDREDON-SENSIBLE/Principale.png",
+    "photos": [
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/1.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/2.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/3.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/4.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/5.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/6.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/7.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/8.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/9.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/10.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/11.png",
+      "/images/narratif/CAPTURES_EDREDON-SENSIBLE/12.png"
+    ],
+    "crew": {
+      "Réalisateur": "À compléter",
+      "Chef Opérateur": "Pablo Martin",
+      "Monteur": "À compléter",
+      "Son": "À compléter",
+      "Musique": "À compléter"
+    },
+    "specs": {
+      "Format": "4K — 16:9",
+      "Caméra": "À compléter",
+      "Optiques": "À compléter",
+      "Étalonnage": "À compléter",
+      "Lieu de tournage": "À compléter",
+      "Durée": "12 min"
+    }
+  }
+]

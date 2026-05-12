@@ -1,0 +1,540 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import films from '../../data/narratif.json';
+
+export function getStaticPaths() {
+  return films.map((film) => ({
+    params: { slug: film.slug },
+    props: { film },
+  }));
+}
+
+const { film } = Astro.props;
+---
+
+<Layout title={`${film.titre} — Pablo Martin`}>
+
+  <!-- ── NAV ONGLETS ── -->
+  <nav class="onglets">
+    <a href="/" class="onglet-retour">← Retour</a>
+    <a href="/#narratif" class="onglet actif">Narratif</a>
+    <a href="/musique" class="onglet">Musique</a>
+    <a href="/video" class="onglet">Vidéo</a>
+    <a href="/etalonnage" class="onglet">Étalonnage</a>
+    <a href="/actu" class="onglet">Actu</a>
+    <a href="/contact" class="onglet">Contact</a>
+  </nav>
+
+  <!-- ── VIDÉO ── -->
+  <section class="film-video">
+    {film.youtube || film.vimeo ? (
+      <div class="video-wrap">
+        <iframe
+          src={film.youtube
+            ? `https://www.youtube.com/embed/${film.youtube}?autoplay=0&rel=0&modestbranding=1`
+            : `https://player.vimeo.com/video/${film.vimeo}`}
+          frameborder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+    ) : (
+      <div class="video-placeholder">
+        <div class="placeholder-inner">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M19 16l14 8-14 8V16z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <p>Vidéo bientôt disponible</p>
+        </div>
+      </div>
+    )}
+
+    <div class="film-video-header">
+      <div class="film-titre-wrap">
+        <div class="film-meta-top">
+          <span class="film-annee">{film.annee}</span>
+          {film.duree && <><span class="sep">·</span><span class="film-duree">{film.duree}</span></>}
+        </div>
+        <h1 class="film-titre">{film.titre}</h1>
+        <div class="film-roles">
+          {film.roles.map((role) => (
+            <span class="role-tag">{role}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── GALERIE ── -->
+  <section class="film-galerie">
+    <div class="section-label">Images du tournage</div>
+    <div class="galerie-grid" data-photos={JSON.stringify(film.photos)}>
+      {film.photos.map((photo, i) => (
+        <button class="galerie-item" data-index={String(i)} aria-label={`Agrandir photo ${i + 1}`}>
+          <img src={photo} alt={`${film.titre} — image ${i + 1}`} loading="lazy" />
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <!-- ── SYNOPSIS + CREW + SPECS ── -->
+  <section class="film-infos">
+
+    <div class="info-bloc synopsis-bloc">
+      <div class="info-label">Synopsis</div>
+      <p class="synopsis-texte">{film.synopsis}</p>
+    </div>
+
+    <div class="info-cols">
+
+      <div class="info-bloc">
+        <div class="info-label">Équipe</div>
+        <table class="info-table">
+          {Object.entries(film.crew).map(([poste, nom]) => (
+            <tr>
+              <td class="table-poste">{poste}</td>
+              <td class="table-nom">{nom}</td>
+            </tr>
+          ))}
+        </table>
+      </div>
+
+      <div class="info-bloc">
+        <div class="info-label">Fiche technique</div>
+        <table class="info-table">
+          {Object.entries(film.specs).map(([key, val]) => (
+            <tr>
+              <td class="table-poste">{key}</td>
+              <td class="table-nom">{val}</td>
+            </tr>
+          ))}
+        </table>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── NAV RETOUR ── -->
+  <nav class="film-nav">
+    <a href="/" class="film-nav-btn">← Retour à l'accueil</a>
+  </nav>
+
+  <!-- ── LIGHTBOX ── -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-bg" id="lightbox-bg"></div>
+    <button class="lightbox-close" id="lightbox-close">✕</button>
+    <button class="lightbox-prev" id="lightbox-prev">‹</button>
+    <button class="lightbox-next" id="lightbox-next">›</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+    <p class="lightbox-counter" id="lightbox-counter"></p>
+  </div>
+
+</Layout>
+
+<style>
+  /* ── ONGLETS ── */
+  .onglets {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding: 0 56px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .onglets::-webkit-scrollbar { display: none; }
+
+  .onglet-retour {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 20px 24px 20px 0;
+    margin-right: 16px;
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .onglet-retour:hover { color: var(--accent); }
+
+  .onglet {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 20px 24px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .onglet:hover { color: var(--text); }
+  .onglet.actif {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ── VIDÉO ── */
+  .film-video {
+    padding: 48px 56px 0;
+  }
+
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    margin-bottom: 32px;
+  }
+
+  .video-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .video-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+  }
+
+  .placeholder-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-muted);
+  }
+
+  .placeholder-inner p {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .film-video-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .film-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+  }
+  .film-annee { color: var(--accent); }
+  .sep { color: var(--border); }
+  .film-duree { color: var(--text-muted); }
+
+  .film-titre {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .film-roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .role-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 5px 14px;
+  }
+
+  /* ── GALERIE ── */
+  .film-galerie {
+    padding: 64px 56px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+
+  .galerie-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+
+  .galerie-item {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--bg-surface);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+  }
+
+  .galerie-item:nth-child(1) {
+    grid-column: span 2;
+    grid-row: span 2;
+    aspect-ratio: unset;
+  }
+  .galerie-item:nth-child(2) {
+    grid-column: span 2;
+  }
+
+  .galerie-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease, filter 0.4s ease;
+    filter: saturate(0.75);
+  }
+  .galerie-item:hover img {
+    transform: scale(1.04);
+    filter: saturate(1);
+  }
+
+  /* ── INFOS ── */
+  .film-infos {
+    padding: 64px 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .info-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+  }
+
+  .info-bloc {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .info-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .synopsis-texte {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-muted);
+    max-width: 720px;
+  }
+
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .info-table tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .info-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .table-poste {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 12px 0;
+    width: 45%;
+  }
+
+  .table-nom {
+    font-size: 0.9rem;
+    color: var(--text);
+    padding: 12px 0;
+    font-weight: 500;
+  }
+
+  /* ── NAV BAS ── */
+  .film-nav {
+    padding: 48px 56px;
+  }
+
+  .film-nav-btn {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .film-nav-btn:hover { color: var(--accent); }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .lightbox.open { opacity: 1; pointer-events: all; }
+  .lightbox-bg {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 10, 16, 0.97);
+    cursor: pointer;
+  }
+  .lightbox-img {
+    position: relative;
+    z-index: 1;
+    max-width: 88vw;
+    max-height: 88vh;
+    object-fit: contain;
+    transition: opacity 0.2s ease;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 24px; right: 32px;
+    z-index: 2;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    width: 40px; height: 40px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox-close:hover { color: var(--accent); border-color: var(--accent); }
+  .lightbox-prev, .lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    font-size: 2rem;
+    width: 48px; height: 48px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox-prev { left: 32px; }
+  .lightbox-next { right: 32px; }
+  .lightbox-prev:hover,
+  .lightbox-next:hover { color: var(--accent); border-color: var(--accent); }
+  .lightbox-counter {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.4);
+  }
+</style>
+
+<script is:inline>
+  let currentPhotos = [];
+  let currentIndex = 0;
+
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxBg = document.getElementById('lightbox-bg');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const lightboxPrev = document.getElementById('lightbox-prev');
+  const lightboxNext = document.getElementById('lightbox-next');
+  const lightboxCounter = document.getElementById('lightbox-counter');
+
+  const grid = document.querySelector('.galerie-grid');
+  const photos = JSON.parse(grid.dataset.photos);
+
+  function openLightbox(index) {
+    currentPhotos = photos;
+    currentIndex = index;
+    showPhoto();
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function showPhoto() {
+    lightboxImg.style.opacity = '0';
+    setTimeout(() => {
+      lightboxImg.src = currentPhotos[currentIndex];
+      lightboxImg.style.opacity = '1';
+    }, 150);
+    lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentPhotos.length;
+  }
+
+  document.querySelectorAll('.galerie-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      openLightbox(parseInt(btn.dataset.index));
+    });
+  });
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightboxBg.addEventListener('click', closeLightbox);
+
+  lightboxPrev.addEventListener('click', function() {
+    currentIndex = (currentIndex - 1 + currentPhotos.length) % currentPhotos.length;
+    showPhoto();
+  });
+
+  lightboxNext.addEventListener('click', function() {
+    currentIndex = (currentIndex + 1) % currentPhotos.length;
+    showPhoto();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') {
+      currentIndex = (currentIndex - 1 + currentPhotos.length) % currentPhotos.length;
+      showPhoto();
+    }
+    if (e.key === 'ArrowRight') {
+      currentIndex = (currentIndex + 1) % currentPhotos.length;
+      showPhoto();
+    }
+  });
+</script>
