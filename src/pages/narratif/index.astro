@@ -1,10 +1,10 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import films from '../data/narratif.json';
-import { getFilmImages } from '../lib/cloudinary.js';
+import Layout from '../../layouts/Layout.astro';
+import films from '../../data/narratif.json';
+import { getFilmImages } from '../../lib/cloudinary.js';
 
 const filmsAvecImages = await Promise.all(
-  films.map(async (film) => {
+  films.map(async (film: any) => {
     const { cover, images_film } = await getFilmImages(film.slug);
     return {
       ...film,
@@ -25,7 +25,7 @@ const filmsAvecImages = await Promise.all(
 
   <nav class="onglets">
     <a href="/narratif" class="onglet actif">Narratif</a>
-    <a href="/musique" class="onglet">Musique</a>
+    <a href="/clips" class="onglet">Clips</a>
     <a href="/video" class="onglet">Vidéo</a>
     <a href="/etalonnage" class="onglet">Étalonnage</a>
     <a href="/actu" class="onglet">Actu</a>
@@ -33,17 +33,21 @@ const filmsAvecImages = await Promise.all(
   </nav>
 
   <section class="films-liste">
-    {films.map((film) => (
+    {filmsAvecImages.map((film: any) => (
       <article class="film-card">
         <a href={`/narratif/${film.slug}`} class="film-visuel">
           <div class="film-cover">
-            <img src={film.cover} alt={film.titre} loading="lazy" />
+            {film.cover ? (
+              <img src={film.cover} alt={film.titre} loading="lazy" />
+            ) : (
+              <div class="cover-placeholder"><span>Image bientôt disponible</span></div>
+            )}
             <div class="film-cover-overlay">
               <span class="voir-projet">Voir le projet →</span>
             </div>
           </div>
           <div class="film-mosaique">
-            {film.photos.slice(0, 6).map((photo, i) => (
+            {film.photos.slice(0, 6).map((photo: string, i: number) => (
               <div class="mosaique-item">
                 <img src={photo} alt={`${film.titre} — photo ${i + 1}`} loading="lazy" />
               </div>
@@ -53,17 +57,20 @@ const filmsAvecImages = await Promise.all(
         <div class="film-infos">
           <div class="film-meta">
             <span class="film-annee">{film.annee}</span>
+            {film.genre && <span class="film-genre">{film.genre}</span>}
             {film.duree && <span class="film-duree">{film.duree}</span>}
+            {film.pays && <span class="film-pays">{film.pays}</span>}
           </div>
           <h2 class="film-titre">
             <a href={`/narratif/${film.slug}`}>{film.titre}</a>
           </h2>
           <div class="film-roles">
-            {film.roles.map((role) => (
+            {film.roles.map((role: string) => (
               <span class="role-tag">{role}</span>
             ))}
           </div>
-          <p class="film-synopsis">{film.synopsis}</p>
+          <p class="film-real">Réal. {film.real}</p>
+          {film.synopsis && <p class="film-synopsis">{film.synopsis}</p>}
         </div>
         <div class="film-separateur"></div>
       </article>
@@ -138,18 +145,14 @@ const filmsAvecImages = await Promise.all(
     flex-direction: column;
   }
 
-  .film-card {
-    padding: 48px 0;
-  }
+  .film-card { padding: 48px 0; }
 
   .film-separateur {
     height: 1px;
     background: var(--border);
     margin-top: 48px;
   }
-  .film-card:last-child .film-separateur {
-    display: none;
-  }
+  .film-card:last-child .film-separateur { display: none; }
 
   .film-visuel {
     display: grid;
@@ -157,11 +160,12 @@ const filmsAvecImages = await Promise.all(
     gap: 6px;
     margin-bottom: 28px;
     cursor: pointer;
+    align-items: stretch;
   }
 
   .film-cover {
     position: relative;
-    aspect-ratio: 16 / 10;
+    min-height: 480px;
     overflow: hidden;
     background: var(--bg-surface);
   }
@@ -171,6 +175,18 @@ const filmsAvecImages = await Promise.all(
     object-fit: cover;
     transition: transform 0.6s ease, filter 0.4s ease;
     filter: saturate(0.75);
+  }
+
+  .cover-placeholder {
+    width: 100%; height: 100%;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   .film-cover-overlay {
@@ -193,27 +209,20 @@ const filmsAvecImages = await Promise.all(
     padding: 10px 24px;
   }
 
-  .film-visuel:hover .film-cover img {
-    transform: scale(1.03);
-    filter: saturate(1);
-  }
-  .film-visuel:hover .film-cover-overlay {
-    opacity: 1;
-  }
+  .film-visuel:hover .film-cover img { transform: scale(1.03); filter: saturate(1); }
+  .film-visuel:hover .film-cover-overlay { opacity: 1; }
 
   .film-mosaique {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 4px;
+    height: 100%;
   }
 
   .mosaique-item {
-    aspect-ratio: 4 / 3;
     overflow: hidden;
     background: var(--bg-surface);
-    border: none;
-    padding: 0;
     cursor: pointer;
     display: block;
     width: 100%;
@@ -226,20 +235,20 @@ const filmsAvecImages = await Promise.all(
     transition: transform 0.5s ease, filter 0.4s ease;
     filter: saturate(0.7);
   }
-  .film-visuel:hover .mosaique-item img {
-    filter: saturate(0.9);
-  }
+  .film-visuel:hover .mosaique-item img { filter: saturate(0.9); }
 
   .film-infos {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    margin-top: 20px;
   }
 
   .film-meta {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   .film-annee {
@@ -248,9 +257,10 @@ const filmsAvecImages = await Promise.all(
     color: var(--accent);
   }
 
-  .film-duree {
+  .film-genre, .film-duree, .film-pays {
     font-size: 0.72rem;
     letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--text-muted);
   }
 
@@ -277,6 +287,12 @@ const filmsAvecImages = await Promise.all(
     color: var(--text-muted);
     border: 1px solid var(--border);
     padding: 4px 12px;
+  }
+
+  .film-real {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
   }
 
   .film-synopsis {
