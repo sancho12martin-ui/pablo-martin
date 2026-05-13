@@ -13,6 +13,8 @@ export async function getStaticPaths() {
 const { film } = Astro.props;
 const { cover, images_film, images_tournage, affiche } = await getFilmImages(film.slug);
 const imageHaut = affiche || cover || null;
+const galeriePhotos = images_tournage.length > 0 ? images_tournage : images_film;
+const galerieLabel = images_tournage.length > 0 ? 'Photos de tournage' : 'Images du film';
 ---
 
 <Layout title={`${film.titre} — Pablo Martin`}>
@@ -20,14 +22,12 @@ const imageHaut = affiche || cover || null;
   <nav class="onglets">
     <a href="/" class="onglet-retour">← Retour</a>
     <a href="/#narratif" class="onglet actif">Narratif</a>
-    <a href="/clips" class="onglet">Clips</a>
     <a href="/video" class="onglet">Vidéo</a>
     <a href="/etalonnage" class="onglet">Étalonnage</a>
-    <a href="/actu" class="onglet">Actu</a>
+    <a href="/timeline" class="onglet">Timeline</a>
     <a href="/contact" class="onglet">Contact</a>
   </nav>
 
-  <!-- ── TITRE ── -->
   <section class="film-titre-section">
     <h1 class="film-titre">{film.titre}</h1>
     <div class="film-meta-top">
@@ -35,8 +35,9 @@ const imageHaut = affiche || cover || null;
       {film.genre && <span class="sep">·</span>}
       <span class="film-annee">{film.annee}</span>
       <span class="sep">·</span>
+      {film.ville && <><span class="film-ville">{film.ville}</span><span class="sep">·</span></>}
       <span class="film-pays">{film.pays}</span>
-      {film.duree && <><span class="sep">·</span><span class="film-duree">{film.duree}</span></>}
+      {film.duree && <><span class="sep">·</span><span class="film-duree">{film.duree.replace(' min', "'")}</span></>}
       <span class="sep">·</span>
       <span class="film-real">Réal. {film.real}</span>
     </div>
@@ -50,12 +51,16 @@ const imageHaut = affiche || cover || null;
     )}
   </section>
 
-  <!-- ── BLOC HAUT : affiche/cover + synopsis + équipe + fiche technique ── -->
   <section class="film-top">
 
     <div class="film-top-left">
       {imageHaut ? (
-        <img src={imageHaut} alt={film.titre} class="film-image-principale" />
+        <img
+          src={imageHaut}
+          alt={film.titre}
+          class="film-image-principale"
+          id="affiche-img"
+        />
       ) : (
         <div class="image-placeholder">
           <span>Image bientôt disponible</span>
@@ -72,49 +77,54 @@ const imageHaut = affiche || cover || null;
       </div>
 
       <div class="info-bloc">
-        <div class="info-label">Équipe</div>
+        <div class="info-label">Fiche technique</div>
         <table class="info-table">
-          {Object.entries(film.crew).map(([poste, nom]: [string, any]) => (
+          {film.cameras && film.cameras.length > 0 && (
             <tr>
-              <td class="table-poste">{poste}</td>
-              <td class="table-nom">{nom}</td>
+              <td class="table-poste">Caméra</td>
+              <td class="table-nom">
+                {film.cameras.map((cam: any, i: number) => (
+                  <span>
+                    {i > 0 && <br/>}
+                    {cam.type === 'numerique' ? '📹' : '🎥'} {cam.nom}
+                    {cam.optiques ? ` / ${cam.optiques}` : ''}
+                    {cam.format ? ` / ${cam.format}` : ''}
+                    {cam.laboratoire ? ` / Labo. ${cam.laboratoire}` : ''}
+                  </span>
+                ))}
+              </td>
             </tr>
-          ))}
+          )}
+          {film.specs && Object.entries(film.specs)
+            .filter(([, val]: [string, any]) => val !== null)
+            .map(([key, val]: [string, any]) => (
+              <tr>
+                <td class="table-poste">{key}</td>
+                <td class="table-nom">{val}</td>
+              </tr>
+            ))
+          }
         </table>
       </div>
 
-     <div class="info-bloc">
-  <div class="info-label">Fiche technique</div>
-  <table class="info-table">
-    {film.cameras && film.cameras.length > 0 && (
-      <tr>
-        <td class="table-poste">Caméra</td>
-        <td class="table-nom">
-          {film.cameras.map((cam: any, i: number) => (
-            <span>
-              {i > 0 && <br/>}
-              {cam.type === 'numerique' ? '📹' : '🎥'} {cam.nom}{cam.format ? ` — ${cam.format}` : ''}
-            </span>
-          ))}
-        </td>
-      </tr>
-    )}
-    {Object.entries(film.specs)
-      .filter(([, val]: [string, any]) => val !== null)
-      .map(([key, val]: [string, any]) => (
-        <tr>
-          <td class="table-poste">{key}</td>
-          <td class="table-nom">{val}</td>
-        </tr>
-      ))
-    }
-  </table>
-</div>
+      <div class="info-bloc">
+        <div class="info-label">Crédits</div>
+        <table class="info-table">
+          {film.credits && Object.entries(film.credits)
+            .filter(([, val]: [string, any]) => val !== null)
+            .map(([poste, nom]: [string, any]) => (
+              <tr>
+                <td class="table-poste">{poste}</td>
+                <td class="table-nom">{nom}</td>
+              </tr>
+            ))
+          }
+        </table>
+      </div>
 
-</div>
-</section>
+    </div>
+  </section>
 
-  <!-- ── VIDÉO ── -->
   <section class="film-video">
     <div class="section-label">Vidéo</div>
     {film.youtube || film.vimeo ? (
@@ -141,28 +151,13 @@ const imageHaut = affiche || cover || null;
     )}
   </section>
 
-  <!-- ── IMAGES DU FILM ── -->
-  {images_film.length > 0 && (
-    <section class="film-galerie">
-      <div class="section-label">Images du film</div>
-      <div class="galerie-grid" data-photos={JSON.stringify(images_film)}>
-        {images_film.map((photo: string, i: number) => (
+  {galeriePhotos.length > 0 && (
+    <section class={`film-galerie ${images_tournage.length > 0 ? 'tournage' : ''}`}>
+      <div class="section-label">{galerieLabel}</div>
+      <div class="galerie-grid" data-photos={JSON.stringify(galeriePhotos)}>
+        {galeriePhotos.map((photo: string, i: number) => (
           <button class="galerie-item" data-index={String(i)} aria-label={`Agrandir photo ${i + 1}`}>
-            <img src={photo} alt={`${film.titre} — image ${i + 1}`} loading="lazy" />
-          </button>
-        ))}
-      </div>
-    </section>
-  )}
-
-  <!-- ── BACKSTAGE ── -->
-  {images_tournage.length > 0 && (
-    <section class="film-galerie tournage">
-      <div class="section-label">Backstage</div>
-      <div class="galerie-grid" data-photos={JSON.stringify(images_tournage)}>
-        {images_tournage.map((photo: string, i: number) => (
-          <button class="galerie-item" data-index={String(i)} aria-label={`Agrandir backstage ${i + 1}`}>
-            <img src={photo} alt={`${film.titre} — backstage ${i + 1}`} loading="lazy" />
+            <img src={photo} alt={`${film.titre} — ${i + 1}`} loading="lazy" />
           </button>
         ))}
       </div>
@@ -173,6 +168,14 @@ const imageHaut = affiche || cover || null;
     <a href="/" class="film-nav-btn">← Retour à l'accueil</a>
   </nav>
 
+  <!-- Lightbox affiche -->
+  <div class="affiche-lightbox" id="affiche-lightbox">
+    <div class="affiche-lightbox-bg" id="affiche-lightbox-bg"></div>
+    <button class="affiche-close" id="affiche-close">✕</button>
+    <img src={imageHaut || ''} alt={film.titre} class="affiche-lightbox-img" />
+  </div>
+
+  <!-- Lightbox galerie -->
   <div class="lightbox" id="lightbox">
     <div class="lightbox-bg" id="lightbox-bg"></div>
     <button class="lightbox-close" id="lightbox-close">✕</button>
@@ -223,7 +226,6 @@ const imageHaut = affiche || cover || null;
   .onglet:hover { color: var(--text); }
   .onglet.actif { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* ── TITRE ── */
   .film-titre-section {
     padding: 48px 56px 32px;
     border-bottom: 1px solid var(--border);
@@ -248,8 +250,13 @@ const imageHaut = affiche || cover || null;
     flex-wrap: wrap;
   }
   .film-annee { color: var(--accent); }
-  .film-genre, .film-pays, .film-real, .film-duree { color: var(--text-muted); }
-  .sep { color: var(--border); }
+  .film-genre, .film-pays, .film-ville, .film-real, .film-duree { color: var(--text-muted); }
+  .sep {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    line-height: 1;
+    opacity: 0.6;
+  }
   .film-roles {
     display: flex;
     flex-wrap: wrap;
@@ -269,7 +276,6 @@ const imageHaut = affiche || cover || null;
     color: var(--accent);
   }
 
-  /* ── BLOC HAUT ── */
   .film-top {
     display: grid;
     grid-template-columns: 2fr 3fr;
@@ -282,14 +288,17 @@ const imageHaut = affiche || cover || null;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center;
   }
   .film-image-principale {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     display: block;
-    flex: 1;
+    cursor: zoom-in;
+    transition: transform 0.4s ease;
   }
+  .film-image-principale:hover { transform: scale(1.03); }
   .image-placeholder {
     width: 100%;
     flex: 1;
@@ -327,6 +336,7 @@ const imageHaut = affiche || cover || null;
     font-size: 1rem;
     line-height: 1.85;
     color: var(--text-muted);
+    font-style: italic;
   }
   .info-table { width: 100%; border-collapse: collapse; }
   .info-table tr { border-bottom: 1px solid var(--border); }
@@ -346,7 +356,6 @@ const imageHaut = affiche || cover || null;
     font-weight: 500;
   }
 
-  /* ── VIDÉO ── */
   .film-video {
     padding: 64px 56px;
     border-bottom: 1px solid var(--border);
@@ -387,7 +396,6 @@ const imageHaut = affiche || cover || null;
     text-transform: uppercase;
   }
 
-  /* ── GALERIES ── */
   .film-galerie {
     padding: 64px 56px;
     border-bottom: 1px solid var(--border);
@@ -401,30 +409,32 @@ const imageHaut = affiche || cover || null;
     margin-bottom: 24px;
   }
   .galerie-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
+    columns: 3;
+    column-gap: 6px;
   }
+
   .galerie-item {
-    aspect-ratio: 16 / 10;
+    break-inside: avoid;
+    display: block;
+    width: 100%;
+    margin-bottom: 6px;
     overflow: hidden;
     background: var(--bg-surface);
     border: none;
     padding: 0;
     cursor: pointer;
-    display: block;
   }
   .galerie-item:nth-child(1) { grid-column: span 2; grid-row: span 2; aspect-ratio: unset; }
   .galerie-item:nth-child(2) { grid-column: span 2; }
   .galerie-item img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease, filter 0.4s ease;
-    filter: saturate(0.75);
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+    filter: none;
   }
-  .galerie-item:hover img { transform: scale(1.04); filter: saturate(1); }
+  .galerie-item:hover img { transform: scale(1.03); }
 
-  /* ── NAV ── */
   .film-nav { padding: 48px 56px; }
   .film-nav-btn {
     font-size: 0.75rem;
@@ -435,7 +445,50 @@ const imageHaut = affiche || cover || null;
   }
   .film-nav-btn:hover { color: var(--accent); }
 
-  /* ── LIGHTBOX ── */
+  /* ── LIGHTBOX AFFICHE ── */
+  .affiche-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .affiche-lightbox.open { opacity: 1; pointer-events: all; }
+  .affiche-lightbox-bg {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 10, 16, 0.97);
+    cursor: pointer;
+  }
+  .affiche-lightbox-img {
+    position: relative;
+    z-index: 1;
+    max-width: 50vw;
+    max-height: 90vh;
+    object-fit: contain;
+  }
+  .affiche-close {
+    position: absolute;
+    top: 24px; right: 32px;
+    z-index: 2;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    width: 40px; height: 40px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .affiche-close:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── LIGHTBOX GALERIE ── */
   .lightbox {
     position: fixed;
     inset: 0;
@@ -521,18 +574,33 @@ const imageHaut = affiche || cover || null;
   const lightboxPrev = document.getElementById('lightbox-prev');
   const lightboxNext = document.getElementById('lightbox-next');
   const lightboxCounter = document.getElementById('lightbox-counter');
+  const afficheLightbox = document.getElementById('affiche-lightbox');
+  const afficheImg = document.getElementById('affiche-img');
+  const afficheLightboxBg = document.getElementById('affiche-lightbox-bg');
+  const afficheClose = document.getElementById('affiche-close');
+
+  if (afficheImg) {
+    afficheImg.addEventListener('click', function() {
+      afficheLightbox.classList.add('open');
+    });
+  }
+
+  function closeAffiche() {
+    afficheLightbox.classList.remove('open');
+  }
+
+  if (afficheLightboxBg) afficheLightboxBg.addEventListener('click', closeAffiche);
+  if (afficheClose) afficheClose.addEventListener('click', closeAffiche);
 
   function openLightbox(photos, index) {
     currentPhotos = photos;
     currentIndex = index;
     showPhoto();
     lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
   }
 
   function closeLightbox() {
     lightbox.classList.remove('open');
-    document.body.style.overflow = '';
   }
 
   function showPhoto() {
@@ -553,22 +621,25 @@ const imageHaut = affiche || cover || null;
     });
   });
 
-  lightboxClose.addEventListener('click', closeLightbox);
-  lightboxBg.addEventListener('click', closeLightbox);
+  if (lightboxBg) lightboxBg.addEventListener('click', closeLightbox);
+  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
 
-  lightboxPrev.addEventListener('click', function() {
+  if (lightboxPrev) lightboxPrev.addEventListener('click', function() {
     currentIndex = (currentIndex - 1 + currentPhotos.length) % currentPhotos.length;
     showPhoto();
   });
 
-  lightboxNext.addEventListener('click', function() {
+  if (lightboxNext) lightboxNext.addEventListener('click', function() {
     currentIndex = (currentIndex + 1) % currentPhotos.length;
     showPhoto();
   });
 
   document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeLightbox();
+      closeAffiche();
+    }
     if (!lightbox.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLightbox();
     if (e.key === 'ArrowLeft') {
       currentIndex = (currentIndex - 1 + currentPhotos.length) % currentPhotos.length;
       showPhoto();

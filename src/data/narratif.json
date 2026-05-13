@@ -7,33 +7,104 @@
     "date": "2026-01",
     "annee": 2026,
     "pays": "France",
+    "ville": "Toulouse",
     "roles": ["Directeur de la Photographie", "Étalonneur"],
     "real": "Anastasia Gorbunova",
     "prix": null,
-    "synopsis": "À compléter.",
-    "youtube": null,
+    "synopsis": "Coupé de lui-même et des autres, un homme sombre dans une forme de suicide quotidien. Mais, dans le silence de sa chute, il perçoit un appel discret — une présence invisible qui le guide vers le pardon et l'acceptation. À travers ce chemin, il découvre la possibilité de se réconcilier avec lui-même.",
+    "youtube": "DMSQXtiaMdk",
     "vimeo": null,
-    "crew": {
-      "Assistant Caméra": "Loris Mersiol",
-      "Production": "Jade Speich",
-      "Prestataires techniques": "Ambre&Azur · CinéDistrict · ENSAV"
-    },
     "cameras": [
-  {
-    "type": "numerique",
-    "nom": "Blackmagic 6K Full Frame"
-  },
-  {
-    "type": "argentique",
-    "nom": "Paillard-Bolex H16",
-    "format": "16mm"
-  }
-],
+      {
+        "type": "numerique",
+        "nom": "Blackmagic 6K Full Frame",
+        "optiques": "Série DZOFilm Catta-Ace"
+      },
+      {
+        "type": "argentique",
+        "nom": "Paillard-Bolex H16",
+        "format": "S16mm",
+        "laboratoire": "Color by Dejonghe"
+      }
+    ],
     "specs": {
-      "Optiques": "Série DZOFilm Catta-Ace",
-      "Laboratoire": "Color by Dejonghe",
+      "Ratio de cadre": "1,5:1",
+      "Master": "4K DCI",
       "Étalonnage": "Pablo Martin",
-      "Lieu de tournage": null
+      "Laboratoire": "Color by Dejonghe"
+    },
+    "credits": {
+      "Réalisation": "Anastasia Gorbunova",
+      "Scénario": null,
+      "Production": "Jade Speich",
+      "Direction de production": null,
+      "1ère assistante réalisation": "Sarah Emin",
+      "2ème assistante réalisation": null,
+      "Script": "Sarah Emin",
+      "Casting": "Anastasia Gorbunova",
+      "Interprétation": "Olivier Lafitte · Richard Vergnes · Morgan Stellar · Elsa-Roos Zeijlemaker",
+      "Directeur de la Photographie": "Pablo Martin",
+      "1er assistant caméra": "Loris Mersiol",
+      "2ème assistant caméra": null,
+      "Chef électro": "Tristan Collet",
+      "Électro": "Lison Sarkis-Dumas · Ilyana Fontaine",
+      "Ingénieur du son": "Hichem Mellouk",
+      "Assistant son": "Antoine Herret",
+      "Chef décorateur": "Abel Mora",
+      "Accessoiriste": "Yustina Yakymiak",
+      "Costumes": "Raphaël Laporte · Luce Bacquier",
+      "Montage image": "Nathan Letréguilly",
+      "Mixage": "Ulysse Clastre",
+      "Régie": "Pénélope Norton · Frédéric Baneret · Haruka Ono",
+      "Prestataires techniques": "Ambre&Azur · CinéDistrict · ENSAV"
     }
+  },
+
+{
+  "slug": "under-a-cloud",
+  "titre": "Under a Cloud",
+  "genre": "Fiction",
+  "duree": "29 min",
+  "date": "2025-01",
+  "annee": 2025,
+  "pays": "France",
+  "ville": "Toulouse",
+  "roles": ["Directeur de la Photographie", "Étalonneur"],
+  "real": "Frédéric Astruc",
+  "prix": "Best Cinematography — FICOCC",
+  "synopsis": null,
+  "youtube": "XONaoS4ID98",
+  "vimeo": null,
+  "cameras": [
+    {
+      "type": "numerique",
+      "nom": "Sony A7III",
+      "optiques": null,
+      "format": null,
+      "laboratoire": null
+    }
+  ],
+  "specs": {
+    "Étalonnage": "Pablo Martin"
+  },
+  "credits": {
+    "Réalisation": "Frédéric Astruc",
+    "Scénario": "Frédéric Astruc",
+    "Production": "Alain Toni — Samoyede Production",
+    "Direction de production": null,
+    "1ère assistante réalisation": null,
+    "Interprétation": "Mylène Darragon",
+    "Directeur de la Photographie": "Pablo Martin",
+    "1er assistant caméra": null,
+    "Ingénieur du son": "Nicolas Massat",
+    "Montage image": "Frédéric Astruc",
+    "Montage son": "Nicolas Massat",
+    "Mixage": "Nicolas Massat",
+    "Musique originale": "Nicolas Massat",
+    "Musique additionnelle": "Cosmo Lawson",
+    "Effets spéciaux": "Franck Mille",
+    "Étalonnage": "Pablo Martin",
+    "Régie": "Wafa Missaoui"
   }
+}
 ]

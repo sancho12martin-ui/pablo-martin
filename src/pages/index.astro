@@ -4,7 +4,7 @@ import films from '../data/narratif.json';
 import { getFilmImages } from '../lib/cloudinary.js';
 
 const filmsAvecImages = await Promise.all(
-  films.map(async (film) => {
+  films.map(async (film: any) => {
     const { cover, images_film } = await getFilmImages(film.slug);
     return {
       ...film,
@@ -16,10 +16,22 @@ const filmsAvecImages = await Promise.all(
 
 const reseaux = [
   {
+    nom: "Email",
+    url: "mailto:pablo12martin@gmail.com",
+    actif: true,
+    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>`
+  },
+  {
     nom: "Instagram",
     url: "https://www.instagram.com/instouzou/",
     actif: true,
     svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>`
+  },
+  {
+    nom: "Vimeo",
+    url: "https://vimeo.com/user128877784",
+    actif: true,
+    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7.42c-.09 2.28-1.7 5.4-4.72 9.36C14.2 20.84 11.56 23 9.37 23c-1.32 0-2.43-1.22-3.35-3.65L4.1 13.23C3.5 10.8 2.85 9.58 2.16 9.58c-.15 0-.68.32-1.6.95L0 9.24c1-.9 1.99-1.79 2.96-2.68C4.28 5.3 5.27 4.6 5.94 4.52c1.56-.15 2.52.91 2.89 3.18.4 2.44.67 3.96.82 4.54.46 2.08.96 3.12 1.51 3.12.43 0 1.07-.67 1.93-2.02.86-1.35 1.32-2.38 1.38-3.1.12-1.17-.34-1.76-1.38-1.76-.49 0-1 .11-1.51.34 1-3.3 2.92-4.9 5.75-4.82 2.1.06 3.08 1.42 2.97 4.08z"/></svg>`
   },
   {
     nom: "YouTube",
@@ -28,34 +40,28 @@ const reseaux = [
     svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>`
   },
   {
-    nom: "Email",
-    url: "mailto:pablo12martin@gmail.com",
+    nom: "Lightyshare",
+    url: "https://www.lightyshare.com/fr/public/15940/show",
     actif: true,
-    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>`
-  },
-  {
-    nom: "Vimeo",
-    url: null,
-    actif: false,
-    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.7 8.3c-.1 2.4-1.8 5.7-5 9.9C13.3 22.6 10.5 24 8.2 24c-1.4 0-2.6-1.3-3.5-3.8L3 14c-.6-2.5-1.3-3.8-2-3.8-.2 0-.7.3-1.7.9L.5 9.9c1-.9 2-1.8 3-2.7 1.4-1.2 2.4-1.8 3.1-1.9 1.6-.2 2.6.9 3 3.3.4 2.6.7 4.2.9 4.8.5 2.2 1 3.3 1.6 3.3.5 0 1.2-.7 2.1-2.2.9-1.5 1.4-2.6 1.5-3.4.1-1.3-.4-1.9-1.5-1.9-.5 0-1.1.1-1.7.4 1.1-3.7 3.3-5.5 6.4-5.4 2.3.1 3.4 1.6 3.3 4.1z"/></svg>`
+    img: `/images/Lightyshare_logo.png`
   },
   {
     nom: "IMDb",
     url: null,
-    actif: false,
-    svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M7 9v6M10 9v6M10 12h3M13 9v6M16 9c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2"/></svg>`
+    actif: true,
+    img: `/images/IMBd_logo.png`
   },
 ];
 
-const youtubeId = "FHqUHvodXFk";
+const vimeoId = "1191904895";
 ---
 
-<Layout title="Pablo Martin — Chef Opérateur Image">
+<Layout title="Pablo Martin — Directeur de la Photographie">
 
   <section class="hero">
     <div class="video-bg">
       <iframe
-        src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+        src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1&muted=1&loop=1&background=1`}
         frameborder="0"
         allow="autoplay; fullscreen"
         allowfullscreen
@@ -65,17 +71,25 @@ const youtubeId = "FHqUHvodXFk";
     <div class="overlay-bottom"></div>
     <div class="hero-content">
       <div class="hero-info">
-        <h1 class="hero-nom">Pablo Martin</h1>
-        <p class="hero-fonction">Directeur de la Photographie</p>
+        <div class="hero-textes">
+          <h1 class="hero-nom">Pablo Martin</h1>
+          <p class="hero-fonction">Directeur de la Photographie</p>
+        </div>
         <div class="reseaux">
           {reseaux.map((r) => (
             r.actif ? (
               <a href={r.url} target="_blank" rel="noopener" class="reseau-btn actif" aria-label={r.nom}>
-                <Fragment set:html={r.svg} />
+                {'img' in r
+                  ? <img src={r.img} alt={r.nom} class="reseau-img" />
+                  : <Fragment set:html={r.svg} />
+                }
               </a>
             ) : (
               <span class="reseau-btn inactif" title={`${r.nom} — bientôt disponible`}>
-                <Fragment set:html={r.svg} />
+                {'img' in r
+                  ? <img src={r.img} alt={r.nom} class="reseau-img inactif-img" />
+                  : <Fragment set:html={r.svg} />
+                }
               </span>
             )
           ))}
@@ -91,21 +105,32 @@ const youtubeId = "FHqUHvodXFk";
 
   <nav class="onglets" id="nav-onglets">
     <a href="#narratif" class="onglet actif">Narratif</a>
-    <a href="/musique" class="onglet">Musique</a>
     <a href="/video" class="onglet">Vidéo</a>
     <a href="/etalonnage" class="onglet">Étalonnage</a>
-    <a href="/actu" class="onglet">Actu</a>
+    <a href="/timeline" class="onglet">Timeline</a>
     <a href="/contact" class="onglet">Contact</a>
   </nav>
 
   <section class="films-liste" id="narratif">
-    {filmsAvecImages.map((film) => (
+    {filmsAvecImages.map((film: any) => (
       <article class="film-card">
+
         <div class="film-header">
           <h2 class="film-titre">
             <a href={`/narratif/${film.slug}`}>{film.titre}</a>
           </h2>
-          <p class="film-desc">{film.roles.join(' · ')} · {film.annee} · {film.pays} · Réal : {film.real}</p>
+          <div class="film-meta">
+            {film.genre && <span>{film.genre}</span>}
+            {film.annee && <><span class="sep">·</span><span>{film.annee}</span></>}
+            {film.pays && <><span class="sep">·</span><span>{film.pays}</span></>}
+            {film.duree && <><span class="sep">·</span><span>{film.duree.replace(' min', "'")}</span></>}
+          </div>
+          <p class="film-real">Réal. {film.real}</p>
+          <div class="film-roles">
+            {film.roles.map((role: string) => (
+              <span class="role-tag">{role}</span>
+            ))}
+          </div>
         </div>
 
         <div class="film-visuel">
@@ -123,7 +148,7 @@ const youtubeId = "FHqUHvodXFk";
           </a>
 
           <div class="film-mosaique" data-photos={JSON.stringify(film.photos)}>
-            {film.photos.slice(0, 12).map((photo, i) => (
+            {film.photos.slice(0, 12).map((photo: string, i: number) => (
               <button
                 class="mosaique-item"
                 data-index={String(i)}
@@ -135,11 +160,47 @@ const youtubeId = "FHqUHvodXFk";
           </div>
         </div>
 
-        <div class="film-crew-bas">
-          <span>Assistant : {film.crew['Assistant']}</span>
-          <span>Prod : {film.crew['Prod']}</span>
-          <span>Prestataire : {film.crew['Prestataire technique']}</span>
-          <span>Caméra : {film.crew['Caméra']}</span>
+       
+
+        <div class="film-infos-bas">
+           {film.prix && (
+          <div class="film-prix-card">🏆 {film.prix}</div>
+        )}
+          {film.credits && (
+            <p class="infos-ligne">
+              {Object.entries(film.credits)
+                .filter(([key, val]: [string, any]) =>
+                  val !== null && (
+                    key === '1er assistant caméra' ||
+                    key === 'Production' ||
+                    key === 'Assistant Caméra'
+                  )
+                )
+                .map(([poste, nom]: [string, any], i: number) => (
+                  <span class="infos-item">
+                    {i > 0 && <span class="dot">·</span>}
+                    <span class="infos-poste">{poste}</span>
+                    <span class="infos-nom">{nom}</span>
+                  </span>
+                ))
+              }
+            </p>
+          )}
+          {film.credits?.['Prestataires techniques'] && (
+            <div class="infos-row">
+              <span class="infos-poste">Prestataires</span>
+              <span class="infos-nom">{film.credits['Prestataires techniques']}</span>
+            </div>
+          )}
+          {film.cameras && film.cameras.map((cam: any) => (
+            <div class="infos-row camera-row">
+              <span class="camera-emoji">{cam.type === 'numerique' ? '📹' : '🎥'}</span>
+              <span class="infos-nom">{cam.nom}</span>
+              {cam.format && <><span class="dot">/</span><span class="infos-nom">{cam.format}</span></>}
+              {cam.laboratoire && <><span class="dot">/</span><span class="infos-nom">Labo. {cam.laboratoire}</span></>}
+              {cam.type === 'numerique' && cam.optiques && <><span class="dot">/</span><span class="infos-nom">{cam.optiques}</span></>}
+            </div>
+          ))}
         </div>
 
         <div class="film-separateur"></div>
@@ -172,16 +233,18 @@ const youtubeId = "FHqUHvodXFk";
     position: absolute;
     inset: 0;
     pointer-events: none;
+    overflow: hidden;
   }
   .video-bg iframe {
     position: absolute;
-    top: 50%; left: 50%;
+    top: 50%;
+    left: 50%;
     width: 177.78vh;
-    height: 56.25vw;
+    height: 100vh;
     min-width: 100%;
     min-height: 100%;
     transform: translate(-50%, -50%);
-    margin-top: -60px;
+    border: none;
   }
   .overlay-top {
     position: absolute;
@@ -209,17 +272,22 @@ const youtubeId = "FHqUHvodXFk";
   .hero-info {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 4px;
     opacity: 0;
     transform: translateY(20px);
     animation: fadeUp 0.8s ease 1s forwards;
   }
+  .hero-textes {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+  }
   .hero-nom {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 800;
-    font-size: clamp(2.8rem, 6.5vw, 5.5rem);
+    font-size: clamp(2.8rem, 6.5vw, 6rem);
     line-height: 1;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.05em;
     color: #ffffff;
     text-shadow: 0 0 0 2px rgba(0,0,0,0.9), 2px 2px 0 rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,1), 0 0 60px rgba(0,0,0,0.9);
     -webkit-text-stroke: 1px rgba(0,0,0,0.5);
@@ -227,12 +295,14 @@ const youtubeId = "FHqUHvodXFk";
   .hero-fonction {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 800;
-    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    font-size: clamp(1.2rem, 2.5vw, 2.2rem);
     line-height: 1;
-    letter-spacing: -0.01em;
+    text-transform: uppercase;
     color: #ffffff;
     text-shadow: 0 0 0 2px rgba(0,0,0,0.9), 2px 2px 0 rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,1), 0 0 60px rgba(0,0,0,0.9);
     -webkit-text-stroke: 1px rgba(0,0,0,0.5);
+    text-align: justify;
+    text-align-last: justify;
   }
   .reseaux {
     display: flex;
@@ -245,14 +315,11 @@ const youtubeId = "FHqUHvodXFk";
     align-items: center;
     justify-content: center;
     width: 38px; height: 38px;
-    border: 1px solid rgba(255,255,255,0.3);
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(8px);
-    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    transition: color 0.2s;
   }
   .reseau-btn svg { width: 17px; height: 17px; }
   .reseau-btn.actif { color: rgba(255,255,255,0.9); cursor: pointer; }
-  .reseau-btn.actif:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-dim); }
+  .reseau-btn.actif:hover { color: var(--accent); }
   .reseau-btn.inactif { color: rgba(255,255,255,0.4); opacity: 0.35; cursor: not-allowed; }
   .scroll-hint {
     color: rgba(255,255,255,0.5);
@@ -302,7 +369,12 @@ const youtubeId = "FHqUHvodXFk";
   }
   .film-card:last-child .film-separateur { display: none; }
 
-  .film-header { margin-bottom: 20px; }
+  .film-header {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
   .film-titre {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 800;
@@ -310,14 +382,40 @@ const youtubeId = "FHqUHvodXFk";
     letter-spacing: -0.02em;
     line-height: 1;
     color: var(--text);
-    margin-bottom: 8px;
   }
   .film-titre a:hover { color: var(--accent); }
-  .film-desc {
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
+  .film-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-muted);
+  }
+  .sep {
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    line-height: 1;
+    opacity: 0.8;
+  }
+  .film-real {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+  .film-roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .role-tag {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
   }
 
   .film-visuel {
@@ -326,7 +424,6 @@ const youtubeId = "FHqUHvodXFk";
     gap: 6px;
     align-items: stretch;
   }
-
   .film-cover {
     position: relative;
     display: block;
@@ -339,8 +436,8 @@ const youtubeId = "FHqUHvodXFk";
   .film-cover img {
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease, filter 0.4s ease;
-    filter: saturate(0.75);
+    transition: transform 0.6s ease;
+    filter: none;
   }
   .cover-placeholder {
     width: 100%; height: 100%;
@@ -371,7 +468,7 @@ const youtubeId = "FHqUHvodXFk";
     border: 1px solid var(--accent);
     padding: 10px 24px;
   }
-  .film-cover:hover img { transform: scale(1.03); filter: saturate(1); }
+  .film-cover:hover img { transform: scale(1.06); }
   .film-cover:hover .film-cover-overlay { opacity: 1; }
 
   .film-mosaique {
@@ -394,22 +491,63 @@ const youtubeId = "FHqUHvodXFk";
   .mosaique-item img {
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease, filter 0.3s ease;
-    filter: saturate(0.65);
+    transition: transform 0.4s ease;
+    filter: none;
     pointer-events: none;
   }
-  .mosaique-item:hover img { transform: scale(1.06); filter: saturate(1); }
+  .mosaique-item:hover img { transform: scale(1.10); }
 
-  .film-crew-bas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
-    margin-top: 16px;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
+  .film-prix-card {
+    font-size: 1rem;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 12px;
+  }
+
+  .film-infos-bas {
+    margin-top: 6px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .infos-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .infos-poste {
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+  .infos-nom {
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
     color: var(--text-muted);
   }
+  .dot {
+    color: var(--border);
+    font-size: 0.65rem;
+  }
+  .camera-emoji { font-size: 1.3rem; }
+
+  .reseau-img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    transition: filter 0.2s;
+  }
+  .reseau-btn.actif:hover .reseau-img {
+    filter: brightness(0) saturate(100%) invert(93%) sepia(61%) saturate(600%) hue-rotate(10deg) brightness(103%);
+  }
+  .inactif-img { opacity: 0.5; }
 
   .lightbox {
     position: fixed;
@@ -505,12 +643,10 @@ const youtubeId = "FHqUHvodXFk";
     currentIndex = index;
     showPhoto();
     lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
   }
 
   function closeLightbox() {
     lightbox.classList.remove('open');
-    document.body.style.overflow = '';
   }
 
   function showPhoto() {
