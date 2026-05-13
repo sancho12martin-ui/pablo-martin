@@ -1,32 +1,122 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import films from '../../data/narratif.json';
+import { getFilmImages } from '../../lib/cloudinary.js';
 
-export function getStaticPaths() {
-  return films.map((film) => ({
+export async function getStaticPaths() {
+  const films = await import('../../data/narratif.json');
+  return films.default.map((film: any) => ({
     params: { slug: film.slug },
     props: { film },
   }));
 }
 
 const { film } = Astro.props;
+const { cover, images_film, images_tournage, affiche } = await getFilmImages(film.slug);
+const imageHaut = affiche || cover || null;
 ---
 
 <Layout title={`${film.titre} — Pablo Martin`}>
 
-  <!-- ── NAV ONGLETS ── -->
   <nav class="onglets">
     <a href="/" class="onglet-retour">← Retour</a>
     <a href="/#narratif" class="onglet actif">Narratif</a>
-    <a href="/musique" class="onglet">Musique</a>
+    <a href="/clips" class="onglet">Clips</a>
     <a href="/video" class="onglet">Vidéo</a>
     <a href="/etalonnage" class="onglet">Étalonnage</a>
     <a href="/actu" class="onglet">Actu</a>
     <a href="/contact" class="onglet">Contact</a>
   </nav>
 
+  <!-- ── TITRE ── -->
+  <section class="film-titre-section">
+    <h1 class="film-titre">{film.titre}</h1>
+    <div class="film-meta-top">
+      {film.genre && <span class="film-genre">{film.genre}</span>}
+      {film.genre && <span class="sep">·</span>}
+      <span class="film-annee">{film.annee}</span>
+      <span class="sep">·</span>
+      <span class="film-pays">{film.pays}</span>
+      {film.duree && <><span class="sep">·</span><span class="film-duree">{film.duree}</span></>}
+      <span class="sep">·</span>
+      <span class="film-real">Réal. {film.real}</span>
+    </div>
+    <div class="film-roles">
+      {film.roles.map((role: string) => (
+        <span class="role-tag">{role}</span>
+      ))}
+    </div>
+    {film.prix && (
+      <div class="film-prix">🏆 {film.prix}</div>
+    )}
+  </section>
+
+  <!-- ── BLOC HAUT : affiche/cover + synopsis + équipe + fiche technique ── -->
+  <section class="film-top">
+
+    <div class="film-top-left">
+      {imageHaut ? (
+        <img src={imageHaut} alt={film.titre} class="film-image-principale" />
+      ) : (
+        <div class="image-placeholder">
+          <span>Image bientôt disponible</span>
+        </div>
+      )}
+      <p class="image-legende">{affiche ? 'Affiche officielle' : 'Image du film'}</p>
+    </div>
+
+    <div class="film-top-right">
+
+      <div class="info-bloc">
+        <div class="info-label">Synopsis</div>
+        <p class="synopsis-texte">{film.synopsis}</p>
+      </div>
+
+      <div class="info-bloc">
+        <div class="info-label">Équipe</div>
+        <table class="info-table">
+          {Object.entries(film.crew).map(([poste, nom]: [string, any]) => (
+            <tr>
+              <td class="table-poste">{poste}</td>
+              <td class="table-nom">{nom}</td>
+            </tr>
+          ))}
+        </table>
+      </div>
+
+     <div class="info-bloc">
+  <div class="info-label">Fiche technique</div>
+  <table class="info-table">
+    {film.cameras && film.cameras.length > 0 && (
+      <tr>
+        <td class="table-poste">Caméra</td>
+        <td class="table-nom">
+          {film.cameras.map((cam: any, i: number) => (
+            <span>
+              {i > 0 && <br/>}
+              {cam.type === 'numerique' ? '📹' : '🎥'} {cam.nom}{cam.format ? ` — ${cam.format}` : ''}
+            </span>
+          ))}
+        </td>
+      </tr>
+    )}
+    {Object.entries(film.specs)
+      .filter(([, val]: [string, any]) => val !== null)
+      .map(([key, val]: [string, any]) => (
+        <tr>
+          <td class="table-poste">{key}</td>
+          <td class="table-nom">{val}</td>
+        </tr>
+      ))
+    }
+  </table>
+</div>
+
+</div>
+</section>
+
   <!-- ── VIDÉO ── -->
   <section class="film-video">
+    <div class="section-label">Vidéo</div>
     {film.youtube || film.vimeo ? (
       <div class="video-wrap">
         <iframe
@@ -49,78 +139,40 @@ const { film } = Astro.props;
         </div>
       </div>
     )}
-
-    <div class="film-video-header">
-      <div class="film-titre-wrap">
-        <div class="film-meta-top">
-          <span class="film-annee">{film.annee}</span>
-          {film.duree && <><span class="sep">·</span><span class="film-duree">{film.duree}</span></>}
-        </div>
-        <h1 class="film-titre">{film.titre}</h1>
-        <div class="film-roles">
-          {film.roles.map((role) => (
-            <span class="role-tag">{role}</span>
-          ))}
-        </div>
-      </div>
-    </div>
   </section>
 
-  <!-- ── GALERIE ── -->
-  <section class="film-galerie">
-    <div class="section-label">Images du tournage</div>
-    <div class="galerie-grid" data-photos={JSON.stringify(film.photos)}>
-      {film.photos.map((photo, i) => (
-        <button class="galerie-item" data-index={String(i)} aria-label={`Agrandir photo ${i + 1}`}>
-          <img src={photo} alt={`${film.titre} — image ${i + 1}`} loading="lazy" />
-        </button>
-      ))}
-    </div>
-  </section>
-
-  <!-- ── SYNOPSIS + CREW + SPECS ── -->
-  <section class="film-infos">
-
-    <div class="info-bloc synopsis-bloc">
-      <div class="info-label">Synopsis</div>
-      <p class="synopsis-texte">{film.synopsis}</p>
-    </div>
-
-    <div class="info-cols">
-
-      <div class="info-bloc">
-        <div class="info-label">Équipe</div>
-        <table class="info-table">
-          {Object.entries(film.crew).map(([poste, nom]) => (
-            <tr>
-              <td class="table-poste">{poste}</td>
-              <td class="table-nom">{nom}</td>
-            </tr>
-          ))}
-        </table>
+  <!-- ── IMAGES DU FILM ── -->
+  {images_film.length > 0 && (
+    <section class="film-galerie">
+      <div class="section-label">Images du film</div>
+      <div class="galerie-grid" data-photos={JSON.stringify(images_film)}>
+        {images_film.map((photo: string, i: number) => (
+          <button class="galerie-item" data-index={String(i)} aria-label={`Agrandir photo ${i + 1}`}>
+            <img src={photo} alt={`${film.titre} — image ${i + 1}`} loading="lazy" />
+          </button>
+        ))}
       </div>
+    </section>
+  )}
 
-      <div class="info-bloc">
-        <div class="info-label">Fiche technique</div>
-        <table class="info-table">
-          {Object.entries(film.specs).map(([key, val]) => (
-            <tr>
-              <td class="table-poste">{key}</td>
-              <td class="table-nom">{val}</td>
-            </tr>
-          ))}
-        </table>
+  <!-- ── BACKSTAGE ── -->
+  {images_tournage.length > 0 && (
+    <section class="film-galerie tournage">
+      <div class="section-label">Backstage</div>
+      <div class="galerie-grid" data-photos={JSON.stringify(images_tournage)}>
+        {images_tournage.map((photo: string, i: number) => (
+          <button class="galerie-item" data-index={String(i)} aria-label={`Agrandir backstage ${i + 1}`}>
+            <img src={photo} alt={`${film.titre} — backstage ${i + 1}`} loading="lazy" />
+          </button>
+        ))}
       </div>
+    </section>
+  )}
 
-    </div>
-  </section>
-
-  <!-- ── NAV RETOUR ── -->
   <nav class="film-nav">
     <a href="/" class="film-nav-btn">← Retour à l'accueil</a>
   </nav>
 
-  <!-- ── LIGHTBOX ── -->
   <div class="lightbox" id="lightbox">
     <div class="lightbox-bg" id="lightbox-bg"></div>
     <button class="lightbox-close" id="lightbox-close">✕</button>
@@ -133,7 +185,6 @@ const { film } = Astro.props;
 </Layout>
 
 <style>
-  /* ── ONGLETS ── */
   .onglets {
     position: sticky;
     top: 0;
@@ -147,7 +198,6 @@ const { film } = Astro.props;
     scrollbar-width: none;
   }
   .onglets::-webkit-scrollbar { display: none; }
-
   .onglet-retour {
     font-size: 0.75rem;
     letter-spacing: 0.14em;
@@ -160,7 +210,6 @@ const { film } = Astro.props;
     transition: color 0.2s;
   }
   .onglet-retour:hover { color: var(--accent); }
-
   .onglet {
     font-size: 0.75rem;
     letter-spacing: 0.14em;
@@ -172,75 +221,16 @@ const { film } = Astro.props;
     transition: color 0.2s, border-color 0.2s;
   }
   .onglet:hover { color: var(--text); }
-  .onglet.actif {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
+  .onglet.actif { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* ── VIDÉO ── */
-  .film-video {
-    padding: 48px 56px 0;
-  }
-
-  .video-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: #000;
-    margin-bottom: 32px;
-  }
-
-  .video-wrap iframe {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .video-placeholder {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: var(--bg-surface);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 32px;
-    border: 1px solid var(--border);
-  }
-
-  .placeholder-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    color: var(--text-muted);
-  }
-
-  .placeholder-inner p {
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .film-video-header {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding-bottom: 48px;
+  /* ── TITRE ── */
+  .film-titre-section {
+    padding: 48px 56px 32px;
     border-bottom: 1px solid var(--border);
-  }
-
-  .film-meta-top {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
+    flex-direction: column;
+    gap: 12px;
   }
-  .film-annee { color: var(--accent); }
-  .sep { color: var(--border); }
-  .film-duree { color: var(--text-muted); }
-
   .film-titre {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 800;
@@ -249,14 +239,22 @@ const { film } = Astro.props;
     letter-spacing: -0.02em;
     color: var(--text);
   }
-
+  .film-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    flex-wrap: wrap;
+  }
+  .film-annee { color: var(--accent); }
+  .film-genre, .film-pays, .film-real, .film-duree { color: var(--text-muted); }
+  .sep { color: var(--border); }
   .film-roles {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 4px;
   }
-
   .role-tag {
     font-size: 0.68rem;
     letter-spacing: 0.12em;
@@ -265,13 +263,136 @@ const { film } = Astro.props;
     border: 1px solid var(--border);
     padding: 5px 14px;
   }
+  .film-prix {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
 
-  /* ── GALERIE ── */
+  /* ── BLOC HAUT ── */
+  .film-top {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 56px;
+    padding: 56px;
+    border-bottom: 1px solid var(--border);
+    align-items: stretch;
+  }
+  .film-top-left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .film-image-principale {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    flex: 1;
+  }
+  .image-placeholder {
+    width: 100%;
+    flex: 1;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    min-height: 400px;
+  }
+  .image-legende {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .film-top-right {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .info-bloc { display: flex; flex-direction: column; gap: 16px; }
+  .info-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .synopsis-texte {
+    font-size: 1rem;
+    line-height: 1.85;
+    color: var(--text-muted);
+  }
+  .info-table { width: 100%; border-collapse: collapse; }
+  .info-table tr { border-bottom: 1px solid var(--border); }
+  .info-table tr:last-child { border-bottom: none; }
+  .table-poste {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 12px 0;
+    width: 45%;
+  }
+  .table-nom {
+    font-size: 0.9rem;
+    color: var(--text);
+    padding: 12px 0;
+    font-weight: 500;
+  }
+
+  /* ── VIDÉO ── */
+  .film-video {
+    padding: 64px 56px;
+    border-bottom: 1px solid var(--border);
+  }
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    margin-top: 24px;
+  }
+  .video-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .video-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 24px;
+    border: 1px solid var(--border);
+  }
+  .placeholder-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-muted);
+  }
+  .placeholder-inner p {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* ── GALERIES ── */
   .film-galerie {
     padding: 64px 56px;
     border-bottom: 1px solid var(--border);
   }
-
+  .film-galerie.tournage { background: var(--bg-surface); }
   .section-label {
     font-size: 0.72rem;
     letter-spacing: 0.16em;
@@ -279,13 +400,11 @@ const { film } = Astro.props;
     color: var(--accent);
     margin-bottom: 24px;
   }
-
   .galerie-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
   }
-
   .galerie-item {
     aspect-ratio: 16 / 10;
     overflow: hidden;
@@ -295,96 +414,18 @@ const { film } = Astro.props;
     cursor: pointer;
     display: block;
   }
-
-  .galerie-item:nth-child(1) {
-    grid-column: span 2;
-    grid-row: span 2;
-    aspect-ratio: unset;
-  }
-  .galerie-item:nth-child(2) {
-    grid-column: span 2;
-  }
-
+  .galerie-item:nth-child(1) { grid-column: span 2; grid-row: span 2; aspect-ratio: unset; }
+  .galerie-item:nth-child(2) { grid-column: span 2; }
   .galerie-item img {
     width: 100%; height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease, filter 0.4s ease;
     filter: saturate(0.75);
   }
-  .galerie-item:hover img {
-    transform: scale(1.04);
-    filter: saturate(1);
-  }
+  .galerie-item:hover img { transform: scale(1.04); filter: saturate(1); }
 
-  /* ── INFOS ── */
-  .film-infos {
-    padding: 64px 56px;
-    display: flex;
-    flex-direction: column;
-    gap: 56px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .info-cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-  }
-
-  .info-bloc {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .info-label {
-    font-size: 0.72rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-
-  .synopsis-texte {
-    font-size: 1.05rem;
-    line-height: 1.85;
-    color: var(--text-muted);
-    max-width: 720px;
-  }
-
-  .info-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  .info-table tr {
-    border-bottom: 1px solid var(--border);
-  }
-
-  .info-table tr:last-child {
-    border-bottom: none;
-  }
-
-  .table-poste {
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 12px 0;
-    width: 45%;
-  }
-
-  .table-nom {
-    font-size: 0.9rem;
-    color: var(--text);
-    padding: 12px 0;
-    font-weight: 500;
-  }
-
-  /* ── NAV BAS ── */
-  .film-nav {
-    padding: 48px 56px;
-  }
-
+  /* ── NAV ── */
+  .film-nav { padding: 48px 56px; }
   .film-nav-btn {
     font-size: 0.75rem;
     letter-spacing: 0.14em;
@@ -481,10 +522,7 @@ const { film } = Astro.props;
   const lightboxNext = document.getElementById('lightbox-next');
   const lightboxCounter = document.getElementById('lightbox-counter');
 
-  const grid = document.querySelector('.galerie-grid');
-  const photos = JSON.parse(grid.dataset.photos);
-
-  function openLightbox(index) {
+  function openLightbox(photos, index) {
     currentPhotos = photos;
     currentIndex = index;
     showPhoto();
@@ -506,9 +544,12 @@ const { film } = Astro.props;
     lightboxCounter.textContent = (currentIndex + 1) + ' / ' + currentPhotos.length;
   }
 
-  document.querySelectorAll('.galerie-item').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      openLightbox(parseInt(btn.dataset.index));
+  document.querySelectorAll('.galerie-grid').forEach(function(grid) {
+    const photos = JSON.parse(grid.dataset.photos);
+    grid.querySelectorAll('.galerie-item').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        openLightbox(photos, parseInt(btn.dataset.index));
+      });
     });
   });
 

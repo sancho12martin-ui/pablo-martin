@@ -1,6 +1,18 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import films from '../../data/narratif.json';
+import Layout from '../layouts/Layout.astro';
+import films from '../data/narratif.json';
+import { getFilmImages } from '../lib/cloudinary.js';
+
+const filmsAvecImages = await Promise.all(
+  films.map(async (film) => {
+    const { cover, images_film } = await getFilmImages(film.slug);
+    return {
+      ...film,
+      cover: cover || null,
+      photos: images_film,
+    };
+  })
+);
 ---
 
 <Layout title="Narratif — Pablo Martin">
