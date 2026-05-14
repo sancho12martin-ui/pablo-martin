@@ -1,0 +1,20 @@
+[
+  {
+    "annee": 2020,
+    "type": "parcours",
+    "categorie": "formation",
+    "titre": "ENSAV — École Nationale Supérieure d'Audiovisuel",
+    "description": "Licence + Master + DURCA Parcours Image. Spécialité Images en 3ème année.",
+    "lieu": "Toulouse, France",
+    "image": "/images/ensav_logo.png"
+  },
+  {
+    "annee": 2016,
+    "type": "parcours",
+    "categorie": "formation",
+    "titre": "Université Paul-Valéry Montpellier 3",
+    "description": "Licence et Master 1 en études cinématographiques — Film/Cinema/Video Studies.",
+    "lieu": "Montpellier, France",
+    "image": "/images/universitee-de-montpellier_logo.png"
+  }
+]

@@ -5,12 +5,11 @@ import { getFilmImages } from '../lib/cloudinary.js';
 
 const filmsAvecImages = await Promise.all(
   films.map(async (film: any) => {
-    const { cover, images_film, prix } = await getFilmImages(film.slug);
+    const { cover, images_film } = await getFilmImages(film.slug);
     return {
       ...film,
       cover: cover || null,
       photos: images_film,
-      prixImage: prix || null,
     };
   })
 );
@@ -101,13 +100,7 @@ const vimeoId = "1191904895";
               <span class="role-tag">{role}</span>
             ))}
           </div>
-          {film.prix && film.prixImage && (
-            <div class="film-prix-bandeau">
-              <img src={film.prixImage} alt={`Prix — ${film.titre}`} class="film-prix-bandeau-logo" />
-              <span class="film-prix-bandeau-texte">🏆 {film.prix}</span>
-            </div>
-          )}
-          {film.prix && !film.prixImage && (
+          {film.prix && (
             <div class="film-prix-card">🏆 {film.prix}</div>
           )}
         </div>
@@ -212,7 +205,7 @@ const vimeoId = "1191904895";
 </Layout>
 
 <style>
-  .hero {
+.hero {
     position: relative;
     width: 100%;
     height: 80vh;
@@ -280,7 +273,7 @@ const vimeoId = "1191904895";
   .hero-textes {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 0px;
   }
 
   .hero-nom {
@@ -315,6 +308,7 @@ const vimeoId = "1191904895";
     width: 100%;
   }
 
+
   .reseau-btn {
     display: flex;
     align-items: center;
@@ -322,9 +316,31 @@ const vimeoId = "1191904895";
     transition: color 0.2s;
   }
 
-  .reseau-btn.actif { color: rgba(255,255,255,0.9); cursor: pointer; }
-  .reseau-btn.actif:hover { color: var(--accent); }
-  .reseau-btn.inactif { color: rgba(255,255,255,0.4); opacity: 0.35; cursor: not-allowed; }
+  .reseau-btn.actif {
+    color: rgba(255,255,255,0.9);
+    cursor: pointer;
+  }
+
+  .reseau-btn.actif:hover {
+    color: var(--accent);
+  }
+
+  .reseau-btn.inactif {
+    color: rgba(255,255,255,0.4);
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .reseau-icone svg {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    display: block;
+    color: inherit;
+    fill: none;
+    stroke: currentColor;
+  }
 
   .reseau-icone {
     display: flex;
@@ -347,10 +363,11 @@ const vimeoId = "1191904895";
     width: clamp(30px, 3.5vw, 52px) !important;
     height: clamp(30px, 3.5vw, 52px) !important;
   }
-
   .reseau-btn.actif:hover .reseau-img {
     filter: brightness(0) saturate(100%) invert(93%) sepia(61%) saturate(600%) hue-rotate(10deg) brightness(103%);
   }
+
+
 
   .inactif-img { opacity: 0.5; }
 
@@ -394,13 +411,11 @@ const vimeoId = "1191904895";
     display: flex;
     flex-direction: column;
   }
-
-  .film-card { padding: 2vh 0; }
-
+  .film-card { padding: 48px 0; }
   .film-separateur {
     height: 1px;
     background: var(--border);
-    margin-top: 2vh;
+    margin-top: 48px;
   }
   .film-card:last-child .film-separateur { display: none; }
 
@@ -430,8 +445,6 @@ const vimeoId = "1191904895";
     text-transform: uppercase;
     color: var(--text-muted);
   }
-
-  .film-duree { text-transform: none; }
 
   .sep {
     color: var(--text-muted);
@@ -473,38 +486,12 @@ const vimeoId = "1191904895";
     color: var(--accent);
   }
 
-  .film-prix-bandeau {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border: 1px solid rgba(232, 255, 0, 0.2);
-    background: rgba(232, 255, 0, 0.04);
-    width: fit-content;
-  }
-
-  .film-prix-bandeau-logo {
-    height: 48px;
-    width: auto;
-    object-fit: contain;
-    filter: brightness(1.3) drop-shadow(0 0 8px rgba(232, 255, 0, 0.2));
-  }
-
-  .film-prix-bandeau-texte {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--accent);
-    font-weight: 700;
-  }
-
   .film-visuel {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 6px;
     align-items: stretch;
   }
-
   .film-cover {
     position: relative;
     display: block;
@@ -587,6 +574,10 @@ const vimeoId = "1191904895";
     gap: 4px;
   }
 
+  .film-duree {
+    text-transform: none;
+  }
+
   .infos-ligne {
     display: flex;
     align-items: center;
@@ -636,7 +627,7 @@ const vimeoId = "1191904895";
   .cameras-bloc {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 0px;
     line-height: 1.2;
   }
 

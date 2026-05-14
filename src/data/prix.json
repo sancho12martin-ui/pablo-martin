@@ -1,0 +1,13 @@
+[
+  {
+    "annee": 2026,
+    "type": "prix",
+    "titre": "Best Cinematography",
+    "festival": "FICOCC",
+    "film": "Under a Cloud",
+    "real": "Frédéric Astruc",
+    "description": "Prix de la meilleure photographie décerné au FICOCC pour le film Under a Cloud de Frédéric Astruc.",
+    "slug": "under-a-cloud",
+    "image": "https://res.cloudinary.com/diyr3otfc/image/upload/v1778759097/Best_Cinematography_Short_Film_veasoj.png"
+  }
+]

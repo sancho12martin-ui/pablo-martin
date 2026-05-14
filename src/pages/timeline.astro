@@ -1,8 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import presse from '../data/presse.json';
+import parcours from '../data/parcours.json';
+import prix from '../data/prix.json';
 
-const evenements = (presse as any[]).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+const tous = [...presse, ...parcours, ...prix].sort((a: any, b: any) => {
+  return parseInt(b.annee) - parseInt(a.annee);
+});
+
+let derniereAnneeAffichee = "";
 ---
 
 <Layout title="Timeline — Pablo Martin">
@@ -17,311 +23,213 @@ const evenements = (presse as any[]).sort((a, b) => new Date(b.date).getTime() -
 
   <section class="timeline-header">
     <h1 class="timeline-titre">Timeline</h1>
-    <p class="timeline-sous-titre">Presse · Prix · Actualités</p>
+    <p class="timeline-sous-titre">Parcours, récompenses et presse</p>
+    
+    <div class="filtres">
+      <button class="filtre actif" data-filtre="tous">Tout</button>
+      <button class="filtre" data-filtre="parcours">Parcours</button>
+      <button class="filtre" data-filtre="presse">Presse</button>
+      <button class="filtre" data-filtre="prix">Prix</button>
+    </div>
   </section>
 
   <section class="timeline-liste">
-    {evenements.map((e: any, idx: number) => (
-      <article class="timeline-card">
+    {tous.map((e: any) => {
+      const estNouvelleAnnee = e.annee !== derniereAnneeAffichee;
+      if (estNouvelleAnnee) derniereAnneeAffichee = e.annee;
 
-        <div class="timeline-gauche">
-          <span class="timeline-mois">{e.mois}</span>
-          <span class={`timeline-badge type-${e.type}`}>{e.type}</span>
-        </div>
-
-        <div class="timeline-droite">
-          {e.image && (
-            <button
-              class="timeline-image-btn"
-              data-src={e.image}
-              data-alt={e.titre}
-              aria-label={`Agrandir — ${e.titre}`}
-            >
-              <img src={e.image} alt={e.titre} class="timeline-image" loading="lazy" />
-            </button>
-          )}
-          <div class="timeline-texte">
-            <p class="timeline-source">{e.source}</p>
-            <h2 class="timeline-card-titre">{e.titre}</h2>
-            <p class="timeline-description">{e.description}</p>
-            <a href={e.lien} target="_blank" rel="noopener" class="timeline-lien">
-              Lire l'article →
-            </a>
+      return (
+        <article class={`timeline-card type-${e.type}`} data-type={e.type}>
+          
+          <div class="timeline-gauche">
+            <div class="sticky-container">
+              <span class={`timeline-annee ${!estNouvelleAnnee ? 'annee-masquee' : ''}`}>
+                {e.annee}
+              </span>
+              <span class="timeline-mois">{e.mois}</span>
+              <span class={`timeline-badge badge-${e.type}`}>
+                {e.type === 'parcours' ? (e.categorie || 'parcours') : e.type === 'presse' ? 'article' : e.type}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div class="timeline-separateur"></div>
-      </article>
-    ))}
+          <div class={`timeline-droite ${e.image ? 'avec-image' : 'sans-image'}`}>
+            
+            {e.image && (
+              <div class="timeline-media">
+                <button class="timeline-image-btn" aria-label="Agrandir l'image">
+                  <img src={e.image} alt={e.titre} class="timeline-image" loading="lazy" />
+                </button>
+              </div>
+            )}
+
+            <div class="timeline-texte">
+              <div class="timeline-meta">
+                {e.source && <span class="timeline-category-label">{e.source}</span>}
+                {e.festival && <span class="timeline-category-label">🏆 {e.festival}</span>}
+              </div>
+              
+              <h2 class="timeline-card-titre">{e.titre}</h2>
+              
+              <div class="timeline-details">
+                {e.film && <p class="info-line">🎬 {e.film}{e.real ? ` — Réal. ${e.real}` : ''}</p>}
+                {e.lieu && <p class="info-line">📍 {e.lieu}</p>}
+              </div>
+
+              <p class="timeline-description">{e.description}</p>
+              
+              <div class="timeline-actions">
+                {e.type === 'prix' && e.slug && (
+                  <a href={`/narratif/${e.slug}`} class="cta-yellow">
+                    Voir le projet <span>→</span>
+                  </a>
+                )}
+                
+                {(e.lien || e.url) && (
+                  <a href={e.lien || e.url} target="_blank" rel="noopener" class="cta-yellow">
+                    {e.type === 'presse' ? "Lire l'article" : "Voir le film"} <span>→</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+          <div class="timeline-separateur"></div>
+        </article>
+      );
+    })}
   </section>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox">
+  <!-- LIGHTBOX AVEC CROIX SOBRE -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
     <div class="lightbox-bg" id="lightbox-bg"></div>
-    <button class="lightbox-close" id="lightbox-close">✕</button>
-    <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+    <button class="lightbox-close" id="lightbox-close" aria-label="Fermer">✕</button>
+    <div class="lightbox-content">
+      <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+    </div>
   </div>
 
 </Layout>
 
 <style>
+  /* --- NAVIGATION --- */
   .onglets {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    padding: 0 56px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    position: sticky; top: 0; z-index: 100; background: var(--bg);
+    display: flex; align-items: center; border-bottom: 1px solid var(--border);
+    padding: 0 56px; overflow-x: auto; scrollbar-width: none;
   }
   .onglets::-webkit-scrollbar { display: none; }
   .onglet {
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 20px 24px;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: color 0.2s, border-color 0.2s;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-muted); padding: 20px 24px; border-bottom: 2px solid transparent;
+    white-space: nowrap; transition: 0.2s; text-decoration: none;
   }
-  .onglet:hover { color: var(--text); }
   .onglet.actif { color: var(--accent); border-bottom-color: var(--accent); }
 
-  .timeline-header {
-    padding: 64px 56px 48px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  /* --- HEADER --- */
+  .timeline-header { padding: 64px 56px 48px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+  .timeline-titre { font-family: Helvetica, Arial, sans-serif; font-weight: 800; font-size: 64px; line-height: 1; letter-spacing: -0.02em; color: var(--text); }
+  .timeline-sous-titre { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 24px; }
 
-  .timeline-titre {
-    font-family: Helvetica, Arial, sans-serif;
-    font-weight: 800;
-    font-size: 64px;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
+  /* --- FILTRES --- */
+  .filtres { display: flex; gap: 10px; }
+  .filtre { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+  .filtre.actif { border-color: var(--accent); color: var(--accent); }
 
-  .timeline-sous-titre {
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
+  /* --- CARTES & TEXTES --- */
+  .timeline-liste { padding: 0 56px 100px; }
+  .timeline-card { display: grid; grid-template-columns: 140px 1fr; gap: 60px; padding: 80px 0; position: relative; }
+  .timeline-card.masque { display: none; }
+  .timeline-category-label { display: block; font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .timeline-card-titre { font-size: clamp(28px, 4vw, 40px); font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 24px; }
+  .cta-yellow { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+  .cta-yellow:hover { color: var(--text); padding-left: 5px; }
 
-  .timeline-liste {
-    padding: 64px 56px;
-    display: flex;
-    flex-direction: column;
-  }
+  /* --- IMAGES --- */
+  .timeline-droite { display: grid; gap: 40px; align-items: start; }
+  .avec-image { grid-template-columns: 320px 1fr; }
+  .timeline-media { border-radius: 4px; overflow: hidden; background: var(--bg-surface); }
+  .timeline-image-btn { border: none; padding: 0; background: none; cursor: pointer; width: 100%; display: block; }
+  .timeline-image { width: 100%; height: auto; display: block; transition: 0.3s; }
+  .timeline-image-btn:hover .timeline-image { opacity: 0.7; }
 
-  .timeline-card {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 40px;
-    padding: 48px 0;
-  }
+  /* --- DIVERS --- */
+  .info-line { font-size: 14px; color: var(--text-muted); margin-bottom: 4px; }
+  .timeline-description { font-size: 16px; line-height: 1.6; color: var(--text-muted); max-width: 700px; margin-top: 16px; }
+  .timeline-annee { font-size: 48px; font-weight: 800; color: var(--text); }
+  .annee-masquee { opacity: 0.1; }
+  .sticky-container { position: sticky; top: 120px; }
+  .timeline-separateur { position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: var(--border); }
 
-  .timeline-separateur {
-    grid-column: 1 / -1;
-    height: 1px;
-    background: var(--border);
-  }
+  /* --- LIGHTBOX SOBRE --- */
+  .lightbox { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; }
+  .lightbox.open { display: flex; }
+  .lightbox-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); }
+  .lightbox-content { position: relative; z-index: 10; max-width: 90vw; max-height: 85vh; }
+  .lightbox-img { max-width: 100%; max-height: 85vh; object-fit: contain; }
 
-  .timeline-card:last-child .timeline-separateur {
-    display: none;
-  }
-
-  /* ── GAUCHE ── */
-  .timeline-gauche {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-top: 4px;
-  }
-
-  .timeline-mois {
-    font-size: 13px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text);
-    font-weight: 700;
-  }
-
-  .timeline-badge {
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    width: fit-content;
-  }
-
-  .type-presse {
-    color: #64b5f6;
-    background: rgba(100, 181, 246, 0.1);
-  }
-
-  .type-prix {
-    color: var(--accent);
-    background: rgba(232, 255, 0, 0.08);
-  }
-
-  /* ── DROITE ── */
-.timeline-droite {
-    display: grid;
-    grid-template-columns: 1fr 5fr;
-    gap: 36px;
-    align-items: start;
-  }
-.timeline-image-btn {
-    display: block;
-    width: 100%;
-    overflow: hidden;
-    border: none;
-    padding: 0;
-    background: none;
-    cursor: pointer;
-  }
-
-  .timeline-image {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    display: block;
-    transition: transform 0.4s ease;
-  }
-
-  .timeline-image-btn:hover .timeline-image {
-    transform: scale(1.03);
-  }
-
-  /* ── TEXTE ── */
-  .timeline-texte {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .timeline-source {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    opacity: 0.8;
-  }
-
-  .timeline-card-titre {
-    font-family: Helvetica, Arial, sans-serif;
-    font-weight: 800;
-    font-size: 28px;
-    line-height: 1.15;
-    color: var(--text);
-    letter-spacing: -0.01em;
-  }
-
-  .timeline-description {
-    font-size: 15px;
-    line-height: 1.8;
-    color: var(--text-muted);
-    max-width: 680px;
-  }
-
-  .timeline-lien {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-top: 8px;
-    display: inline-block;
-    transition: opacity 0.2s;
-    text-decoration: none;
-  }
-
-  .timeline-lien:hover { opacity: 0.7; }
-
-  /* ── LIGHTBOX ── */
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-  .lightbox.open { opacity: 1; pointer-events: all; }
-  .lightbox-bg {
-    position: absolute;
-    inset: 0;
-    background: rgba(8, 10, 16, 0.97);
-    cursor: pointer;
-  }
-.lightbox-img {
-    position: relative;
-    z-index: 1;
-    max-width: 95vw;
-    max-height: 95vh;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-  }
   .lightbox-close {
-    position: absolute;
-    top: 24px; right: 32px;
-    z-index: 2;
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 100;
     background: none;
-    border: 1px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.7);
-    font-size: 16px;
-    width: 40px; height: 40px;
+    border: none;
+    color: white;
+    font-size: 32px;
+    font-weight: 200;
     cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 10px;
+    line-height: 1;
+    transition: opacity 0.2s;
+    opacity: 0.5;
   }
-  .lightbox-close:hover { color: var(--accent); border-color: var(--accent); }
+  .lightbox-close:hover { opacity: 1; }
+
+  @media (max-width: 1024px) {
+    .timeline-card { grid-template-columns: 1fr; gap: 32px; padding: 48px 0; }
+    .avec-image { grid-template-columns: 1fr; }
+    .timeline-header, .timeline-liste { padding-left: 24px; padding-right: 24px; }
+    .onglets { padding: 0 24px; }
+  }
 </style>
 
 <script is:inline>
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightbox-img');
-  const lightboxBg = document.getElementById('lightbox-bg');
-  const lightboxClose = document.getElementById('lightbox-close');
+  // FILTRES
+  const buttons = document.querySelectorAll('.filtre');
+  const items = document.querySelectorAll('.timeline-card');
 
- document.querySelectorAll('.timeline-image-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      const src = btn.getAttribute('data-src');
-      const alt = btn.getAttribute('data-alt');
-      lightboxImg.src = src;
-      lightboxImg.alt = alt;
-      lightbox.classList.add('open');
-      document.body.style.overflow = 'hidden';
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('actif'));
+      btn.classList.add('actif');
+      const filter = btn.getAttribute('data-filtre');
+      items.forEach(item => {
+        item.classList.toggle('masque', filter !== 'tous' && item.getAttribute('data-type') !== filter);
+      });
     });
   });
 
-  lightboxBg.addEventListener('click', function() {
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
+  // LIGHTBOX
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  
+  document.querySelectorAll('.timeline-image-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const img = btn.querySelector('img');
+      if (img) {
+        lbImg.src = img.src;
+        lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    });
   });
 
-  lightboxClose.addEventListener('click', function() {
-    lightbox.classList.remove('open');
+  const closeLB = () => {
+    lb.classList.remove('open');
     document.body.style.overflow = '';
-  });
+  };
 
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      lightbox.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-  });
+  document.getElementById('lightbox-bg').addEventListener('click', closeLB);
+  document.getElementById('lightbox-close').addEventListener('click', closeLB);
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLB(); });
 </script>

@@ -6,7 +6,11 @@ cloudinary.config({
   api_secret: import.meta.env.CLOUDINARY_API_SECRET,
 });
 
+const cache = new Map();
+
 export async function getFilmImages(slug) {
+  if (cache.has(slug)) return cache.get(slug);
+
   const basePath = `narratif/${slug}`;
 
   async function getFolder(folder) {
@@ -32,11 +36,14 @@ export async function getFilmImages(slug) {
     getFolder('prix'),
   ]);
 
-  return {
+  const result = {
     cover: cover[0] || null,
     images_film,
     images_tournage,
     affiche: affiche[0] || null,
     prix: prix[0] || null,
   };
+
+  cache.set(slug, result);
+  return result;
 }
