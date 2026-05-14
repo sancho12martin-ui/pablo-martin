@@ -1,9 +1,10 @@
 [
   {
     "annee": 2026,
+    "mois" : "janvier 2026",
     "type": "prix",
     "titre": "Best Cinematography",
-    "festival": "FICOCC",
+    "festival": "FICOCC (Five Continents International Film Festival) - Venezuela",
     "film": "Under a Cloud",
     "real": "Frédéric Astruc",
     "description": "Prix de la meilleure photographie décerné au FICOCC pour le film Under a Cloud de Frédéric Astruc.",
