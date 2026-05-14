@@ -24,11 +24,12 @@ export async function getFilmImages(slug) {
     }
   }
 
-  const [cover, images_film, images_tournage, affiche] = await Promise.all([
+  const [cover, images_film, images_tournage, affiche, prix] = await Promise.all([
     getFolder('cover'),
     getFolder('images_film'),
     getFolder('images_tournage'),
     getFolder('affiche'),
+    getFolder('prix'),
   ]);
 
   return {
@@ -36,5 +37,6 @@ export async function getFilmImages(slug) {
     images_film,
     images_tournage,
     affiche: affiche[0] || null,
+    prix: prix[0] || null,
   };
 }

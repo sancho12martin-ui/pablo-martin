@@ -1,0 +1,327 @@
+---
+import Layout from '../layouts/Layout.astro';
+import presse from '../data/presse.json';
+
+const evenements = (presse as any[]).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+---
+
+<Layout title="Timeline — Pablo Martin">
+
+  <nav class="onglets" id="nav-onglets">
+    <a href="/" class="onglet">Narratif</a>
+    <a href="/video" class="onglet">Vidéo</a>
+    <a href="/etalonnage" class="onglet">Étalonnage</a>
+    <a href="/timeline" class="onglet actif">Timeline</a>
+    <a href="/contact" class="onglet">Contact</a>
+  </nav>
+
+  <section class="timeline-header">
+    <h1 class="timeline-titre">Timeline</h1>
+    <p class="timeline-sous-titre">Presse · Prix · Actualités</p>
+  </section>
+
+  <section class="timeline-liste">
+    {evenements.map((e: any, idx: number) => (
+      <article class="timeline-card">
+
+        <div class="timeline-gauche">
+          <span class="timeline-mois">{e.mois}</span>
+          <span class={`timeline-badge type-${e.type}`}>{e.type}</span>
+        </div>
+
+        <div class="timeline-droite">
+          {e.image && (
+            <button
+              class="timeline-image-btn"
+              data-src={e.image}
+              data-alt={e.titre}
+              aria-label={`Agrandir — ${e.titre}`}
+            >
+              <img src={e.image} alt={e.titre} class="timeline-image" loading="lazy" />
+            </button>
+          )}
+          <div class="timeline-texte">
+            <p class="timeline-source">{e.source}</p>
+            <h2 class="timeline-card-titre">{e.titre}</h2>
+            <p class="timeline-description">{e.description}</p>
+            <a href={e.lien} target="_blank" rel="noopener" class="timeline-lien">
+              Lire l'article →
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-separateur"></div>
+      </article>
+    ))}
+  </section>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-bg" id="lightbox-bg"></div>
+    <button class="lightbox-close" id="lightbox-close">✕</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+  </div>
+
+</Layout>
+
+<style>
+  .onglets {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding: 0 56px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .onglets::-webkit-scrollbar { display: none; }
+  .onglet {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 20px 24px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .onglet:hover { color: var(--text); }
+  .onglet.actif { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .timeline-header {
+    padding: 64px 56px 48px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .timeline-titre {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: 800;
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .timeline-sous-titre {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .timeline-liste {
+    padding: 64px 56px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .timeline-card {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 40px;
+    padding: 48px 0;
+  }
+
+  .timeline-separateur {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .timeline-card:last-child .timeline-separateur {
+    display: none;
+  }
+
+  /* ── GAUCHE ── */
+  .timeline-gauche {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 4px;
+  }
+
+  .timeline-mois {
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .timeline-badge {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    width: fit-content;
+  }
+
+  .type-presse {
+    color: #64b5f6;
+    background: rgba(100, 181, 246, 0.1);
+  }
+
+  .type-prix {
+    color: var(--accent);
+    background: rgba(232, 255, 0, 0.08);
+  }
+
+  /* ── DROITE ── */
+.timeline-droite {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    gap: 36px;
+    align-items: start;
+  }
+.timeline-image-btn {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    border: none;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .timeline-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .timeline-image-btn:hover .timeline-image {
+    transform: scale(1.03);
+  }
+
+  /* ── TEXTE ── */
+  .timeline-texte {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .timeline-source {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.8;
+  }
+
+  .timeline-card-titre {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 1.15;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .timeline-description {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-muted);
+    max-width: 680px;
+  }
+
+  .timeline-lien {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 8px;
+    display: inline-block;
+    transition: opacity 0.2s;
+    text-decoration: none;
+  }
+
+  .timeline-lien:hover { opacity: 0.7; }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .lightbox.open { opacity: 1; pointer-events: all; }
+  .lightbox-bg {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 10, 16, 0.97);
+    cursor: pointer;
+  }
+.lightbox-img {
+    position: relative;
+    z-index: 1;
+    max-width: 95vw;
+    max-height: 95vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 24px; right: 32px;
+    z-index: 2;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    font-size: 16px;
+    width: 40px; height: 40px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox-close:hover { color: var(--accent); border-color: var(--accent); }
+</style>
+
+<script is:inline>
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxBg = document.getElementById('lightbox-bg');
+  const lightboxClose = document.getElementById('lightbox-close');
+
+ document.querySelectorAll('.timeline-image-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const src = btn.getAttribute('data-src');
+      const alt = btn.getAttribute('data-alt');
+      lightboxImg.src = src;
+      lightboxImg.alt = alt;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  lightboxBg.addEventListener('click', function() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+
+  lightboxClose.addEventListener('click', function() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+</script>

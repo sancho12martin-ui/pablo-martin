@@ -28,7 +28,7 @@ const filmsAvecImages = await Promise.all(
     <a href="/clips" class="onglet">Clips</a>
     <a href="/video" class="onglet">Vidéo</a>
     <a href="/etalonnage" class="onglet">Étalonnage</a>
-    <a href="/actu" class="onglet">Actu</a>
+    <a href="/timeline" class="onglet">Timeline</a>
     <a href="/contact" class="onglet">Contact</a>
   </nav>
 
@@ -56,10 +56,10 @@ const filmsAvecImages = await Promise.all(
         </a>
         <div class="film-infos">
           <div class="film-meta">
-            <span class="film-annee">{film.annee}</span>
-            {film.genre && <span class="film-genre">{film.genre}</span>}
-            {film.duree && <span class="film-duree">{film.duree}</span>}
-            {film.pays && <span class="film-pays">{film.pays}</span>}
+            {film.genre && <span class="film-genre-label">{film.genre}</span>}
+            {film.duree && <><span class="sep">·</span><span>{film.duree}</span></>}
+            {film.pays && <><span class="sep">·</span><span>{film.pays}</span></>}
+            {film.annee && <><span class="sep">·</span><span>{film.annee}</span></>}
           </div>
           <h2 class="film-titre">
             <a href={`/narratif/${film.slug}`}>{film.titre}</a>
@@ -69,8 +69,8 @@ const filmsAvecImages = await Promise.all(
               <span class="role-tag">{role}</span>
             ))}
           </div>
-          <p class="film-real">Réal. {film.real}</p>
-          {film.synopsis && <p class="film-synopsis">{film.synopsis}</p>}
+          <p class="film-real"><span class="real-label">Réal.</span> {film.real}</p>
+          {film.prix && <div class="film-prix-card">🏆 {film.prix}</div>}
         </div>
         <div class="film-separateur"></div>
       </article>
@@ -86,8 +86,8 @@ const filmsAvecImages = await Promise.all(
   }
 
   .retour {
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
+    font-size: 12px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--text-muted);
     transition: color 0.2s;
@@ -97,17 +97,17 @@ const filmsAvecImages = await Promise.all(
   .retour:hover { color: var(--accent); }
 
   .page-titre {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     font-weight: 800;
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-size: 64px;
     line-height: 1;
     letter-spacing: -0.02em;
     color: var(--text);
   }
 
   .page-sous-titre {
-    font-size: 0.75rem;
-    letter-spacing: 0.16em;
+    font-size: 12px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--text-muted);
     margin-top: 10px;
@@ -124,8 +124,8 @@ const filmsAvecImages = await Promise.all(
   .onglets::-webkit-scrollbar { display: none; }
 
   .onglet {
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
+    font-size: 12px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--text-muted);
     padding: 20px 24px;
@@ -173,8 +173,8 @@ const filmsAvecImages = await Promise.all(
   .film-cover img {
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease, filter 0.4s ease;
-    filter: saturate(0.75);
+    transition: transform 0.6s ease;
+    filter: none;
   }
 
   .cover-placeholder {
@@ -184,8 +184,8 @@ const filmsAvecImages = await Promise.all(
     align-items: center;
     justify-content: center;
     color: var(--text-muted);
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    font-size: 12px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
   }
 
@@ -201,15 +201,15 @@ const filmsAvecImages = await Promise.all(
   }
 
   .voir-projet {
-    font-size: 0.75rem;
-    letter-spacing: 0.16em;
+    font-size: 12px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--accent);
     border: 1px solid var(--accent);
     padding: 10px 24px;
   }
 
-  .film-visuel:hover .film-cover img { transform: scale(1.03); filter: saturate(1); }
+  .film-visuel:hover .film-cover img { transform: scale(1.03); }
   .film-visuel:hover .film-cover-overlay { opacity: 1; }
 
   .film-mosaique {
@@ -232,42 +232,43 @@ const filmsAvecImages = await Promise.all(
   .mosaique-item img {
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease, filter 0.4s ease;
-    filter: saturate(0.7);
+    transition: transform 0.5s ease;
+    filter: none;
   }
-  .film-visuel:hover .mosaique-item img { filter: saturate(0.9); }
+  .film-visuel:hover .mosaique-item img { transform: scale(1.04); }
 
   .film-infos {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 8px;
   }
 
   .film-meta {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
-  }
-
-  .film-annee {
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    color: var(--accent);
-  }
-
-  .film-genre, .film-duree, .film-pays {
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
+    font-size: 12px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--text-muted);
   }
 
+  .sep {
+    color: var(--text-muted);
+    font-size: 20px;
+    line-height: 1;
+    opacity: 0.8;
+  }
+
+  .film-genre-label {
+    color: var(--accent);
+  }
+
   .film-titre {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     font-weight: 800;
-    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-size: 38px;
     letter-spacing: -0.02em;
     line-height: 1;
     color: var(--text);
@@ -281,24 +282,29 @@ const filmsAvecImages = await Promise.all(
   }
 
   .role-tag {
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
+    font-size: 13px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--text-muted);
     border: 1px solid var(--border);
     padding: 4px 12px;
+    font-weight: 800;
   }
 
   .film-real {
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
+    font-size: 13px;
+    letter-spacing: 1px;
     color: var(--text-muted);
   }
 
-  .film-synopsis {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    line-height: 1.7;
-    max-width: 680px;
+  .real-label {
+    color: var(--accent);
+  }
+
+  .film-prix-card {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
   }
 </style>
