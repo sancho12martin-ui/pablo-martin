@@ -3,7 +3,7 @@
     "slug": "pardon",
     "titre": "Pardon",
     "genre": "Fiction",
-    "duree": "18 min",
+    "duree": "18 Min",
     "date": "2026-01",
     "annee": 2026,
     "pays": "France",
@@ -32,9 +32,7 @@
     ],
     "specs": {
       "Ratio de cadre": "1,5:1",
-      "Master": "4K DCI",
-      "Étalonnage": "Pablo Martin",
-      "Laboratoire": "Color by Dejonghe"
+      "Master": "4K DCI"
     },
     "credits": {
       "Réalisation": "Anastasia Gorbunova",
@@ -58,9 +56,9 @@
       "Costumes": "Raphaël Laporte · Luce Bacquier",
       "Montage image": "Nathan Letréguilly",
       "Mixage": "Ulysse Clastre",
-      "Régie": "Pénélope Norton · Frédéric Baneret · Haruka Ono",
       "Étalonnage": "Pablo Martin",
       "Laboratoire": "Color by Dejonghe",
+      "Régie": "Pénélope Norton · Frédéric Baneret · Haruka Ono",
       "Prestataires techniques": "Ambre&Azur · CinéDistrict · ENSAV"
     }
   },
@@ -68,7 +66,7 @@
     "slug": "under-a-cloud",
     "titre": "Under a Cloud",
     "genre": "Fiction",
-    "duree": "29 min",
+    "duree": "29 Min",
     "date": "2025-01",
     "annee": 2025,
     "pays": "France",
@@ -90,9 +88,7 @@
     ],
     "specs": {
       "Ratio de cadre": null,
-      "Master": null,
-      "Étalonnage": "Pablo Martin",
-      "Laboratoire": null
+      "Master": null
     },
     "credits": {
       "Réalisation": "Frédéric Astruc",
@@ -119,7 +115,7 @@
     "slug": "carcasse-ramasse",
     "titre": "Carcasse Ramasse",
     "genre": "Fiction",
-    "duree": "13 min",
+    "duree": "13 Min",
     "date": "2025-01",
     "annee": 2025,
     "pays": "France",
@@ -141,9 +137,7 @@
     ],
     "specs": {
       "Ratio de cadre": "1,5:1",
-      "Master": "4K DCI",
-      "Étalonnage": "Pablo Martin",
-      "Laboratoire": null
+      "Master": "4K DCI"
     },
     "credits": {
       "Réalisation": "Aurore Sicard",
@@ -174,7 +168,7 @@
     "slug": "chamane",
     "titre": "Chamane",
     "genre": "Fiction",
-    "duree": "15 min",
+    "duree": "15 Min",
     "date": "2025-01",
     "annee": 2025,
     "pays": "France",
@@ -196,9 +190,7 @@
     ],
     "specs": {
       "Ratio de cadre": "1,85:1",
-      "Master": "4K DCI",
-      "Étalonnage": "Pablo Martin · Nathan Vergé",
-      "Laboratoire": null
+      "Master": "4K DCI"
     },
     "credits": {
       "Réalisation": "Mathieu Brelu-Brelu",
@@ -220,12 +212,11 @@
       "Prestataires techniques": "ENSAV · Étincelle Post-Production"
     }
   },
-
   {
     "slug": "le-livre-laisse-blanc",
     "titre": "Le livre laissé blanc (客人)",
     "genre": "Fiction",
-    "duree": "17 min",
+    "duree": "17 Min",
     "date": "2024-01",
     "annee": 2024,
     "pays": "France",
@@ -247,9 +238,7 @@
     ],
     "specs": {
       "Ratio de cadre": "1,66:1",
-      "Master": "2K DCI",
-      "Étalonnage": "Pablo Martin",
-      "Laboratoire": null
+      "Master": "2K DCI"
     },
     "credits": {
       "Réalisation": "Ziyang Wang",
@@ -273,12 +262,59 @@
       "Prestataires techniques": "ENS Louis Lumière · ENSAV"
     }
   },
-  
+  {
+    "slug": "the-nine-of-heart",
+    "titre": "The Nine of Heart",
+    "genre": "Fiction",
+    "duree": "14 Min",
+    "date": "2023-01",
+    "annee": 2023,
+    "pays": "France",
+    "ville": null,
+    "roles": ["Directeur de la Photographie", "Étalonneur"],
+    "real": "Eli Morin",
+    "prix": null,
+    "synopsis": null,
+    "youtube": null,
+    "vimeo": null,
+    "cameras": [
+      {
+        "type": "numerique",
+        "nom": "Sony PXW-FS5",
+        "optiques": null,
+        "format": null,
+        "laboratoire": null
+      }
+    ],
+    "specs": {
+      "Ratio de cadre": "2,35:1",
+      "Master": "4K DCI"
+    },
+    "credits": {
+      "Réalisation": "Eli Morin",
+      "Scénario": "Eli Morin",
+      "Production": "ENSAV",
+      "1ère assistante réalisation": "Camille Thibaud",
+      "2ème assistante réalisation": "Violette Gleizer",
+      "Script": "Adriana Yarmonova",
+      "Interprétation": "Vivian Marquez · Martin Walker · Florine Houssay · Angélique Dulac · Randy Stone · Philippe Chatard",
+      "Directeur de la Photographie": "Pablo Martin",
+      "1er assistant caméra": "Faustine Gasquet",
+      "2ème assistant caméra": "Aurore Sicard",
+      "Chef électro": "Maria DePalma",
+      "Ingénieur du son": "Ely Smiri",
+      "Assistant son": "Eva Fredouelle · Bastien Sahli · Violette Gleizer",
+      "Chef décorateur": "Anouche Pratbernon",
+      "Montage image": "Eli Morin",
+      "Étalonnage": "Pablo Martin",
+      "Prestataires techniques": "ENSAV"
+    }
+  },
   {
     "slug": "metropole",
     "titre": "Métropole",
     "genre": "Fiction",
-    "duree": "12 min",
+    "duree": "12 Min",
     "date": "2022-01",
     "annee": 2022,
     "pays": "France",
@@ -300,9 +336,7 @@
     ],
     "specs": {
       "Ratio de cadre": "1,33:1",
-      "Master": "4K DCI",
-      "Étalonnage": "Pablo Martin",
-      "Laboratoire": "Color by Dejonghe"
+      "Master": "4K DCI"
     },
     "credits": {
       "Réalisation": "Frédéric Astruc",
@@ -324,62 +358,11 @@
       "Prestataires techniques": "ENSAV"
     }
   },
-
-  {
-  "slug": "the-nine-of-heart",
-  "titre": "The Nine of Heart",
-  "genre": "Fiction",
-  "duree": "14 min",
-  "date": "2023-01",
-  "annee": 2023,
-  "pays": "France",
-  "ville": null,
-  "roles": ["Directeur de la Photographie", "Étalonneur"],
-  "real": "Eli Morin",
-  "prix": null,
-  "synopsis": null,
-  "youtube": null,
-  "vimeo": null,
-  "cameras": [
-    {
-      "type": "numerique",
-      "nom": "Sony PXW-FS5",
-      "optiques": null,
-      "format": null,
-      "laboratoire": null
-    }
-  ],
-  "specs": {
-    "Ratio de cadre": "2,35:1",
-    "Master": "4K DCI",
-    "Étalonnage": "Pablo Martin",
-    "Laboratoire": null
-  },
-  "credits": {
-    "Réalisation": "Eli Morin",
-    "Scénario": "Eli Morin",
-    "Production": "ENSAV",
-    "1ère assistante réalisation": "Camille Thibaud",
-    "2ème assistante réalisation": "Violette Gleizer",
-    "Script": "Adriana Yarmonova",
-    "Interprétation": "Vivian Marquez · Martin Walker · Florine Houssay · Angélique Dulac · Randy Stone · Philippe Chatard",
-    "Directeur de la Photographie": "Pablo Martin",
-    "1er assistant caméra": "Faustine Gasquet",
-    "2ème assistant caméra": "Aurore Sicard",
-    "Chef électro": "Maria DePalma",
-    "Ingénieur du son": "Ely Smiri",
-    "Assistant son": "Eva Fredouelle · Bastien Sahli · Violette Gleizer",
-    "Chef décorateur": "Anouche Pratbernon",
-    "Montage image": "Eli Morin",
-    "Étalonnage": "Pablo Martin",
-    "Prestataires techniques": "ENSAV"
-  }
-},
   {
     "slug": "le-noeud",
     "titre": "Le Nœud",
     "genre": "Fiction",
-    "duree": "5 min",
+    "duree": "5 Min",
     "date": "2021-01",
     "annee": 2021,
     "pays": "France",
@@ -401,9 +384,7 @@
     ],
     "specs": {
       "Ratio de cadre": "1,33:1",
-      "Master": "2K DCI",
-      "Étalonnage": null,
-      "Laboratoire": "Color by Dejonghe"
+      "Master": "2K DCI"
     },
     "credits": {
       "Réalisation": "Anastasia Gorbunova",
