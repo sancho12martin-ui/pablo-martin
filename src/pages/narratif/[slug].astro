@@ -61,6 +61,16 @@ const prixImage = prix || null;
 
   <section class="film-top">
     <div class="film-top-left">
+      
+      {/* BANDEAU MUBI : Apparaît uniquement si film.mubi existe */}
+      {film.mubi && (
+        <a href={film.mubi} target="_blank" rel="noopener noreferrer" class="bandeau-mubi">
+          <span class="mubi-dot"></span>
+          Disponible sur MUBI
+          <span class="mubi-arrow">↗</span>
+        </a>
+      )}
+
       {imageHaut ? (
         <img
           src={imageHaut}
@@ -309,6 +319,46 @@ const prixImage = prix || null;
     font-weight: 800;
   }
 
+  /* Style du bandeau MUBI */
+/* --- NOUVEAU BANDEAU MUBI --- */
+  .bandeau-mubi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    background: #000; /* Fond noir pour faire ressortir le texte */
+    color: #fff;
+    text-decoration: none;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px solid var(--accent); /* Bordure jaune MUBI */
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bandeau-mubi:hover {
+    background: var(--accent);
+    color: #000;
+  }
+
+  .mubi-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent);
+    animation: mubi-pulse 2s infinite;
+  }
+
+  @keyframes mubi-pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+  }
   .film-prix {
     font-size: 12px;
     letter-spacing: 1.5px;
@@ -358,7 +408,7 @@ const prixImage = prix || null;
   .film-top-left {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0; /* Réduit pour que le bandeau soit collé à l'image */
     align-items: center;
   }
 
@@ -391,6 +441,7 @@ const prixImage = prix || null;
   }
 
   .image-legende {
+    margin-top: 12px;
     font-size: 11px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
