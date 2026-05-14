@@ -5,15 +5,15 @@ import { getFilmImages } from '../lib/cloudinary.js';
 
 const filmsAvecImages = await Promise.all(
   films.map(async (film: any) => {
-    const { cover, images_film } = await getFilmImages(film.slug);
+    const { cover, images_film, prix_image } = await getFilmImages(film.slug); // On récupère 'prix_image'
     return {
       ...film,
       cover: cover || null,
       photos: images_film,
+      prix_img_url: prix_image || null, // On l'ajoute à l'objet film
     };
   })
 );
-
 const reseaux = [
   // On ajoute la classe 'mail-img' ici
   { nom: "Email", url: "mailto:pablo12martin@gmail.com", actif: true, img: `/images/mail_logo.svg`, classe: 'mail-img' }, 
@@ -103,7 +103,18 @@ const vimeoId = "1191904895";
             ))}
           </div>
           {film.prix && (
-            <div class="film-prix-card">🏆 {film.prix}</div>
+            <div class="film-prix-bandeau">
+              {film.prix_img_url ? (
+                <img src={film.prix_img_url} alt="Award" class="film-prix-bandeau-logo" />
+              ) : (
+                <span class="film-prix-emoji">🏆</span>
+              )}
+              
+              <div class="film-prix-texte">
+                <span class="prix-label">Distinction</span>
+                <span class="prix-nom">{film.prix}</span>
+              </div>
+            </div>
           )}
         </div>
 
@@ -361,22 +372,19 @@ const vimeoId = "1191904895";
     display: block;
   }
 
-/* Taille spécifique pour le logo IMDb (déjà présent) */
+/* Taille pour le logo IMDb (Légèrement augmenté) */
   .imdb-img {
-    width: clamp(30px, 3.5vw, 52px) !important;
-    height: clamp(30px, 3.5vw, 52px) !important;
+    width: clamp(34px, 4vw, 58px) !important;
+    height: clamp(34px, 4vw, 58px) !important;
   }
 
-  /* --- NOUVELLES TAILLES --- */
-
   /* Taille pour le logo Mail */
-/* Taille pour le logo Mail (Légèrement boosté) */
   .mail-img {
     width: clamp(22px, 2.8vw, 39px) !important;
     height: clamp(22px, 2.8vw, 39px) !important;
   }
 
-  /* Taille pour le logo Lightyshare (Juste un peu plus grand) */
+  /* Taille pour le logo Lightyshare */
   .lighty-img {
     width: clamp(24px, 3vw, 42px) !important;
     height: clamp(24px, 3vw, 42px) !important;
@@ -502,6 +510,62 @@ const vimeoId = "1191904895";
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--accent);
+  }
+/* --- NOUVEAU BANDEAU PRIX (INDEX) --- */
+  .film-prix-bandeau {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    background: linear-gradient(90deg, rgba(232, 255, 0, 0.1) 0%, transparent 100%);
+    border-left: 2px solid var(--accent);
+    margin: 15px 0;
+    transition: all 0.3s ease;
+  }
+
+  .film-prix-bandeau:hover {
+    background: linear-gradient(90deg, rgba(232, 255, 0, 0.15) 0%, transparent 100%);
+    transform: translateX(5px);
+  }
+
+.film-prix-bandeau-logo {
+    height: 45px; /* Un peu plus grand pour Cloudinary */
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1); /* Rend le logo blanc si la source est noire */
+    opacity: 0.9;
+  }
+
+  .film-prix-emoji {
+    font-size: 20px;
+    opacity: 0.8;
+  }
+  .film-prix-texte {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .prix-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .prix-nom {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* --- AJUSTEMENT TYPO TITRE --- */
+  .film-titre {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: 900; /* Plus gras pour la DA */
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
   }
 
   .film-visuel {

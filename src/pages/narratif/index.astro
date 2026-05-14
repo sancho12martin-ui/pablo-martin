@@ -5,11 +5,13 @@ import { getFilmImages } from '../../lib/cloudinary.js';
 
 const filmsAvecImages = await Promise.all(
   films.map(async (film: any) => {
-    const { cover, images_film } = await getFilmImages(film.slug);
+    // On récupère prix_image qui vient de ton nouveau lib/cloudinary.js
+    const { cover, images_film, prix_image } = await getFilmImages(film.slug);
     return {
       ...film,
       cover: cover || null,
       photos: images_film,
+      prix_img_url: prix_image || null,
     };
   })
 );
@@ -54,6 +56,7 @@ const filmsAvecImages = await Promise.all(
             ))}
           </div>
         </a>
+
         <div class="film-infos">
           <div class="film-meta">
             {film.genre && <span class="film-genre-label">{film.genre}</span>}
@@ -61,17 +64,35 @@ const filmsAvecImages = await Promise.all(
             {film.pays && <><span class="sep">·</span><span>{film.pays}</span></>}
             {film.annee && <><span class="sep">·</span><span>{film.annee}</span></>}
           </div>
+
           <h2 class="film-titre">
             <a href={`/narratif/${film.slug}`}>{film.titre}</a>
           </h2>
+
           <div class="film-roles">
             {film.roles.map((role: string) => (
               <span class="role-tag">{role}</span>
             ))}
           </div>
+
           <p class="film-real"><span class="real-label">Réal.</span> {film.real}</p>
-          {film.prix && <div class="film-prix-card">🏆 {film.prix}</div>}
+
+          {/* --- NOUVEAU BANDEAU RÉCOMPENSE --- */}
+          {film.prix && (
+            <div class="film-prix-bandeau">
+              {film.prix_img_url ? (
+                <img src={film.prix_img_url} alt="Award" class="film-prix-bandeau-logo" />
+              ) : (
+                <span class="film-prix-emoji">🏆</span>
+              )}
+              <div class="film-prix-texte">
+                <span class="prix-label">Récompense</span>
+                <span class="prix-nom">{film.prix}</span>
+              </div>
+            </div>
+          )}
         </div>
+
         <div class="film-separateur"></div>
       </article>
     ))}
@@ -174,7 +195,6 @@ const filmsAvecImages = await Promise.all(
     width: 100%; height: 100%;
     object-fit: cover;
     transition: transform 0.6s ease;
-    filter: none;
   }
 
   .cover-placeholder {
@@ -214,8 +234,8 @@ const filmsAvecImages = await Promise.all(
 
   .film-mosaique {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
     gap: 4px;
     height: 100%;
   }
@@ -223,7 +243,6 @@ const filmsAvecImages = await Promise.all(
   .mosaique-item {
     overflow: hidden;
     background: var(--bg-surface);
-    cursor: pointer;
     display: block;
     width: 100%;
     height: 100%;
@@ -233,7 +252,6 @@ const filmsAvecImages = await Promise.all(
     width: 100%; height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
-    filter: none;
   }
   .film-visuel:hover .mosaique-item img { transform: scale(1.04); }
 
@@ -301,10 +319,52 @@ const filmsAvecImages = await Promise.all(
     color: var(--accent);
   }
 
-  .film-prix-card {
-    font-size: 12px;
-    letter-spacing: 1.5px;
+  /* --- STYLE DU BANDEAU PRIX --- */
+  .film-prix-bandeau {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 22px;
+    background: linear-gradient(90deg, rgba(232, 255, 0, 0.08) 0%, transparent 100%);
+    border-left: 3px solid var(--accent);
+    margin-top: 15px;
+    width: fit-content;
+    transition: transform 0.3s ease;
+  }
+
+  .film-prix-bandeau:hover {
+    transform: translateX(5px);
+  }
+
+  .film-prix-bandeau-logo {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1); /* Force le logo en blanc */
+    opacity: 0.9;
+  }
+
+  .film-prix-emoji {
+    font-size: 22px;
+  }
+
+  .film-prix-texte {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .prix-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
     color: var(--accent);
+    font-weight: 800;
+  }
+
+  .prix-nom {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
   }
 </style>

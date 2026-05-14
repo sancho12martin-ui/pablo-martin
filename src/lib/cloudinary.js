@@ -9,6 +9,7 @@ cloudinary.config({
 const cache = new Map();
 
 export async function getFilmImages(slug) {
+  // Vérification du cache pour éviter des appels API inutiles
   if (cache.has(slug)) return cache.get(slug);
 
   const basePath = `narratif/${slug}`;
@@ -16,18 +17,21 @@ export async function getFilmImages(slug) {
   async function getFolder(folder) {
     try {
       const result = await cloudinary.search
-        .expression(`folder:${basePath}/${folder}`)
+        .expression(`folder:${basePath}/${folder}/*`)
         .sort_by('public_id', 'asc')
         .max_results(50)
         .execute();
+      
       return result.resources
         .sort((a, b) => a.public_id.localeCompare(b.public_id, undefined, { numeric: true }))
         .map((r) => r.secure_url);
-    } catch {
+    } catch (error) {
+      console.error(`Erreur lors de la récupération du dossier ${folder} pour ${slug}:`, error);
       return [];
     }
   }
 
+  // Récupération en parallèle de tous les dossiers, y compris 'prix'
   const [cover, images_film, images_tournage, affiche, prix] = await Promise.all([
     getFolder('cover'),
     getFolder('images_film'),
@@ -41,7 +45,8 @@ export async function getFilmImages(slug) {
     images_film,
     images_tournage,
     affiche: affiche[0] || null,
-    prix: prix[0] || null,
+    // On récupère la première image trouvée dans le dossier prix
+    prix_image: prix[0] || null, 
   };
 
   cache.set(slug, result);
