@@ -245,6 +245,68 @@
       "Prestataires techniques": "ENS Louis Lumière · ENSAV"
     }
   },
+
+  {
+  "slug": "ces-jours-qui-disparaissent",
+  "titre": "Ces jours qui disparaissent",
+  "genre": "Fiction",
+  "duree": "21 Min",
+  "date": "2024-01",
+  "annee": 2024,
+  "pays": "France",
+  "ville": "Pays Basque",
+  "roles": ["Directeur de la Photographie", "Étalonneur"],
+  "real": "Perrine Mottez",
+  "prix": null,
+  "synopsis": null,
+  "youtube": null,
+  "vimeo": null,
+  "cameras": [
+    {
+      "type": "numerique",
+      "nom": "Canon C300 MkII",
+      "optiques": null,
+      "format": null,
+      "laboratoire": null
+    }
+  ],
+  "specs": {
+    "Ratio de cadre": "1,85:1",
+    "Master": "4K DCI"
+  },
+  "credits": {
+    "Réalisation": "Perrine Mottez",
+    "Scénario": "Perrine Mottez",
+    "Adaptation": "Ces jours qui disparaissent de Timothé Le Boucher",
+    "Storyboard": "Pierre Mischieri-Peillet",
+    "Production": "ENSAV",
+    "1ère assistante réalisation": "Bérangère Foucart",
+    "2ème assistante réalisation": "Jacques Rossi · Louna Riera",
+    "Script": "Lola Rigot",
+    "Interprétation": "Mehdi Boulanger · Éléonore Muleika · Émile Chaygneaud · Cochise Le Berre · Aude Moatti · Melizia Finnochio · Erwan Le Berre · Marjorie Vanoli · Nina Bergal · Aude Evellier · Ethan Calendreau · Naos Pierre",
+    "Directeur de la Photographie": "Pablo Martin",
+    "1er assistant caméra": "Johanna Monteis",
+    "2ème assistant caméra": "Faustine Gasquet",
+    "Opérateur drone": "Pays-Basque Drone",
+    "Chef électro": "Roman Kroll",
+    "Électro": "Guillaume Le Guen · Lou Cardiegue · Tim Fraux · Eliès Debbache",
+    "Machiniste": "Jérôme Gadeau",
+    "Assistant machiniste": "Eliès Debbache",
+    "Ingénieur du son": "Vincent Berranger",
+    "Assistant son": "Sylvain Laborel Prades",
+    "Chef décorateur": "Perrine Mottez",
+    "Assistant décorateur": "Lucile Allinger · Bérangère Foucart · Camille Gauthier Quattrocci · Helen Dawson · Lilia Guguen Pras · Clémence Lecheneau · Léanne Le Poder · Vincent Berranger · Amina Bichon · Guillaume Le Guen · Sophie Scognamillo · Lou Cardiegue · Mario Ser · Paul Laonet · Louca Bernardo · Emma Brunet",
+    "Accessoiriste": "Amina Pichon",
+    "Photographe plateau": "Guillaume Le Guen",
+    "Montage image": "Perrine Mottez",
+    "Post-synchronisation": "Camille Gauthier Quattrocci",
+    "Musique originale": "Matthias Ury",
+    "Effets spéciaux": "Florent Birkenstock",
+    "Étalonnage": "Pablo Martin",
+    "Régie": "Lilia Guguen Pras · Sophie Scognamillo · Esther Zammit · Tara Maurel",
+    "Prestataires techniques": "ENSAV"
+  }
+},
   {
     "slug": "the-nine-of-heart",
     "titre": "The Nine of Heart",
@@ -300,7 +362,7 @@
     "date": "2022-01",
     "annee": 2022,
     "pays": "FRANCE",
-    "roles": ["DIRECTEUR DE LA PHOTOGRAPHIE", "ÉTALONNEUR"],
+    "roles": ["DIRECTEUR DE LA PHOTOGRAPHIE"],
     "real": "Ziyang Wang",
     "prix": null,
     "synopsis": "Le médecin annonce à Anne que si elle n'est pas hospitalisée immédiatement, son état deviendra irréversible. Pourtant, elle ne présente aucun symptôme. Elle part seule pour l'Auvergne. Là-bas, Anne a le sentiment que tout est à sa place. Un ami vient lui rendre visite.",

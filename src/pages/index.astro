@@ -5,23 +5,22 @@ import { getFilmImages } from '../lib/cloudinary.js';
 
 const filmsAvecImages = await Promise.all(
   films.map(async (film: any) => {
-    const { cover, images_film, prix_image } = await getFilmImages(film.slug); // On récupère 'prix_image'
+    const { cover, images_film, prix } = await getFilmImages(film.slug);
     return {
       ...film,
       cover: cover || null,
       photos: images_film,
-      prix_img_url: prix_image || null, // On l'ajoute à l'objet film
+      prixImage: prix || null,
     };
   })
 );
+
 const reseaux = [
-  // On ajoute la classe 'mail-img' ici
-  { nom: "Email", url: "mailto:pablo12martin@gmail.com", actif: true, img: `/images/mail_logo.svg`, classe: 'mail-img' }, 
+  { nom: "Email", url: "mailto:pablo12martin@gmail.com", actif: true, img: `/images/mail_logo.svg`, classe: 'mail-img' },
   { nom: "Instagram", url: "https://www.instagram.com/instouzou/", actif: true, img: `/images/instagram_logo.svg` },
   { nom: "Vimeo", url: "https://vimeo.com/user128877784", actif: true, img: `/images/vimeo_logo.svg` },
   { nom: "YouTube", url: "https://www.youtube.com/@Pablo12Martin", actif: true, img: `/images/youtube_logo.svg` },
-  // On ajoute la classe 'lighty-img' ici
-  { nom: "Lightyshare", url: "https://www.lightyshare.com/fr/public/15940/show", actif: true, img: `/images/Lightyshare_logo.png`, classe: 'lighty-img' }, 
+  { nom: "Lightyshare", url: "https://www.lightyshare.com/fr/public/15940/show", actif: true, img: `/images/Lightyshare_logo.png`, classe: 'lighty-img' },
   { nom: "LinkedIn", url: "https://www.linkedin.com/in/pablo-martin-910780212/", actif: true, img: `/images/linkedin_logo.svg` },
   { nom: "IMDb", url: null, actif: true, img: `/images/IMBd_logo.png`, classe: 'imdb-img' },
 ];
@@ -104,17 +103,18 @@ const vimeoId = "1191904895";
           </div>
           {film.prix && (
             <div class="film-prix-bandeau">
-              {film.prix_img_url ? (
-                <img src={film.prix_img_url} alt="Award" class="film-prix-bandeau-logo" />
-              ) : (
-                <span class="film-prix-emoji">🏆</span>
+              {film.prixImage && (
+                <img src={film.prixImage} alt={`Prix — ${film.titre}`} class="film-prix-bandeau-logo" />
               )}
-              
-              <div class="film-prix-texte">
-                <span class="prix-label">Distinction</span>
-                <span class="prix-nom">{film.prix}</span>
-              </div>
+              <span class="film-prix-bandeau-texte">🏆 {film.prix}</span>
             </div>
+          )}
+          {film.mubi && (
+            <a href={film.mubi} target="_blank" rel="noopener noreferrer" class="bandeau-mubi">
+              <img src="/images/mubi_logo.png" alt="MUBI" class="mubi-logo" />
+              <span class="mubi-texte">Disponible sur MUBI</span>
+              <span class="mubi-arrow">↗</span>
+            </a>
           )}
         </div>
 
@@ -218,7 +218,7 @@ const vimeoId = "1191904895";
 </Layout>
 
 <style>
-.hero {
+  .hero {
     position: relative;
     width: 100%;
     height: 80vh;
@@ -286,7 +286,7 @@ const vimeoId = "1191904895";
   .hero-textes {
     display: flex;
     flex-direction: column;
-    gap: 0px;
+    gap: 0;
   }
 
   .hero-nom {
@@ -321,7 +321,6 @@ const vimeoId = "1191904895";
     width: 100%;
   }
 
-
   .reseau-btn {
     display: flex;
     align-items: center;
@@ -329,31 +328,9 @@ const vimeoId = "1191904895";
     transition: color 0.2s;
   }
 
-  .reseau-btn.actif {
-    color: rgba(255,255,255,0.9);
-    cursor: pointer;
-  }
-
-  .reseau-btn.actif:hover {
-    color: var(--accent);
-  }
-
-  .reseau-btn.inactif {
-    color: rgba(255,255,255,0.4);
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
-  .reseau-icone svg {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
-    display: block;
-    color: inherit;
-    fill: none;
-    stroke: currentColor;
-  }
+  .reseau-btn.actif { color: rgba(255,255,255,0.9); cursor: pointer; }
+  .reseau-btn.actif:hover { color: var(--accent); }
+  .reseau-btn.inactif { color: rgba(255,255,255,0.4); opacity: 0.35; cursor: not-allowed; }
 
   .reseau-icone {
     display: flex;
@@ -372,28 +349,24 @@ const vimeoId = "1191904895";
     display: block;
   }
 
-/* Taille pour le logo IMDb (Légèrement augmenté) */
   .imdb-img {
     width: clamp(34px, 4vw, 58px) !important;
     height: clamp(34px, 4vw, 58px) !important;
   }
 
-  /* Taille pour le logo Mail */
   .mail-img {
     width: clamp(22px, 2.8vw, 39px) !important;
     height: clamp(22px, 2.8vw, 39px) !important;
   }
 
-  /* Taille pour le logo Lightyshare */
   .lighty-img {
     width: clamp(24px, 3vw, 42px) !important;
     height: clamp(24px, 3vw, 42px) !important;
   }
+
   .reseau-btn.actif:hover .reseau-img {
     filter: brightness(0) saturate(100%) invert(93%) sepia(61%) saturate(600%) hue-rotate(10deg) brightness(103%);
   }
-
-
 
   .inactif-img { opacity: 0.5; }
 
@@ -437,7 +410,9 @@ const vimeoId = "1191904895";
     display: flex;
     flex-direction: column;
   }
+
   .film-card { padding: 48px 0; }
+
   .film-separateur {
     height: 1px;
     background: var(--border);
@@ -472,6 +447,8 @@ const vimeoId = "1191904895";
     color: var(--text-muted);
   }
 
+  .film-duree { text-transform: none; }
+
   .sep {
     color: var(--text-muted);
     font-size: 20px;
@@ -505,67 +482,72 @@ const vimeoId = "1191904895";
     font-weight: 800;
   }
 
-  .film-prix-card {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-/* --- NOUVEAU BANDEAU PRIX (INDEX) --- */
   .film-prix-bandeau {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 12px 20px;
-    background: linear-gradient(90deg, rgba(232, 255, 0, 0.1) 0%, transparent 100%);
+    gap: 20px;
+    padding: 16px 24px;
+    background: linear-gradient(90deg, rgba(232, 255, 0, 0.12) 0%, transparent 100%);
     border-left: 2px solid var(--accent);
-    margin: 15px 0;
+    width: 100%;
     transition: all 0.3s ease;
   }
 
   .film-prix-bandeau:hover {
-    background: linear-gradient(90deg, rgba(232, 255, 0, 0.15) 0%, transparent 100%);
-    transform: translateX(5px);
+    background: linear-gradient(90deg, rgba(232, 255, 0, 0.18) 0%, transparent 100%);
+    transform: translateX(4px);
   }
 
-.film-prix-bandeau-logo {
-    height: 45px; /* Un peu plus grand pour Cloudinary */
+  .film-prix-bandeau-logo {
+    height: 80px;
     width: auto;
     object-fit: contain;
-    filter: brightness(0) invert(1); /* Rend le logo blanc si la source est noire */
-    opacity: 0.9;
+    filter: brightness(1.3) drop-shadow(0 0 10px rgba(232, 255, 0, 0.25));
   }
 
-  .film-prix-emoji {
-    font-size: 20px;
-    opacity: 0.8;
-  }
-  .film-prix-texte {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .prix-label {
-    font-size: 9px;
+  .film-prix-bandeau-texte {
+    font-size: 14px;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--accent);
     font-weight: 700;
   }
 
-  .prix-nom {
-    font-size: 13px;
-    color: #fff;
-    font-weight: 500;
+  .bandeau-mubi {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 14px;
+    background: linear-gradient(135deg, #1a0072 0%, #2d00b3 50%, #1a0072 100%);
+    border: 1px solid rgba(100, 80, 255, 0.4);
+    text-decoration: none;
+    width: fit-content;
+    transition: all 0.2s ease;
+  }
+  .bandeau-mubi:hover {
+    background: linear-gradient(135deg, #2200aa 0%, #3800cc 50%, #2200aa 100%);
+    border-color: rgba(150, 120, 255, 0.6);
   }
 
-  /* --- AJUSTEMENT TYPO TITRE --- */
-  .film-titre {
-    font-family: Helvetica, Arial, sans-serif;
-    font-weight: 900; /* Plus gras pour la DA */
+  .mubi-logo {
+    height: 16px;
+    width: auto;
+    display: block;
+    filter: brightness(0) invert(1);
+  }
+
+  .mubi-texte {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    letter-spacing: -0.03em;
+    color: #ffffff;
+  }
+
+  .mubi-arrow {
+    font-size: 11px;
+    color: #ffffff;
+    opacity: 0.7;
   }
 
   .film-visuel {
@@ -574,6 +556,7 @@ const vimeoId = "1191904895";
     gap: 6px;
     align-items: stretch;
   }
+
   .film-cover {
     position: relative;
     display: block;
@@ -656,10 +639,6 @@ const vimeoId = "1191904895";
     gap: 4px;
   }
 
-  .film-duree {
-    text-transform: none;
-  }
-
   .infos-ligne {
     display: flex;
     align-items: center;
@@ -709,7 +688,7 @@ const vimeoId = "1191904895";
   .cameras-bloc {
     display: flex;
     flex-direction: column;
-    gap: 0px;
+    gap: 0;
     line-height: 1.2;
   }
 

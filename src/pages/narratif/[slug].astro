@@ -12,6 +12,7 @@ export async function getStaticPaths() {
 
 const { film } = Astro.props;
 const { cover, images_film, images_tournage, affiche, prix } = await getFilmImages(film.slug);
+
 const imageHaut = affiche || cover || null;
 const galeriePhotos = images_tournage.length > 0 ? images_tournage : images_film;
 const isTournage = images_tournage.length > 0;
@@ -32,7 +33,9 @@ const prixImage = prix || null;
   <section class="film-titre-section">
     <div class="film-titre-header">
       <div class="film-titre-left">
+
         <h1 class="film-titre">{film.titre}</h1>
+
         <div class="film-meta-top">
           {film.genre && <span class="film-genre-label">{film.genre}</span>}
           {film.duree && <><span class="sep">·</span><span class="film-duree">{film.duree}</span></>}
@@ -40,37 +43,38 @@ const prixImage = prix || null;
           {film.pays && <><span class="sep">·</span><span class="film-pays">{film.pays}</span></>}
           {film.annee && <><span class="sep">·</span><span class="film-annee">{film.annee}</span></>}
         </div>
+
         <p class="film-real-ligne"><span class="real-label">Réal.</span> {film.real}</p>
+
         <div class="film-roles">
           {film.roles.map((role: string) => (
             <span class="role-tag">{role}</span>
           ))}
         </div>
-        {film.prix && prixImage && (
+
+        {film.prix && (
           <div class="film-prix-bandeau">
-            <img src={prixImage} alt={`Prix — ${film.titre}`} class="film-prix-bandeau-logo" />
+            {prixImage && (
+              <img src={prixImage} alt={`Prix — ${film.titre}`} class="film-prix-bandeau-logo" />
+            )}
             <span class="film-prix-bandeau-texte">🏆 {film.prix}</span>
           </div>
         )}
-        {film.prix && !prixImage && (
-          <div class="film-prix">🏆 {film.prix}</div>
+
+        {film.mubi && (
+          <a href={film.mubi} target="_blank" rel="noopener noreferrer" class="bandeau-mubi">
+            <img src="/images/mubi_logo.png" alt="MUBI" class="mubi-logo" />
+            <span class="mubi-texte">Disponible sur MUBI</span>
+            <span class="mubi-arrow">↗</span>
+          </a>
         )}
+
       </div>
     </div>
   </section>
 
   <section class="film-top">
     <div class="film-top-left">
-      
-      {/* BANDEAU MUBI : Apparaît uniquement si film.mubi existe */}
-      {film.mubi && (
-        <a href={film.mubi} target="_blank" rel="noopener noreferrer" class="bandeau-mubi">
-          <span class="mubi-dot"></span>
-          Disponible sur MUBI
-          <span class="mubi-arrow">↗</span>
-        </a>
-      )}
-
       {imageHaut ? (
         <img
           src={imageHaut}
@@ -320,45 +324,52 @@ const prixImage = prix || null;
   }
 
   /* Style du bandeau MUBI */
-/* --- NOUVEAU BANDEAU MUBI --- */
   .bandeau-mubi {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
     width: 100%;
-    background: #000; /* Fond noir pour faire ressortir le texte */
-    color: #fff;
+    background: linear-gradient(135deg, #1a0072 0%, #2d00b3 50%, #1a0072 100%);
+    color: #ffffff;
     text-decoration: none;
-    padding: 12px;
-    margin-bottom: 20px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border: 1px solid var(--accent); /* Bordure jaune MUBI */
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 14px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
   }
 
   .bandeau-mubi:hover {
-    background: var(--accent);
-    color: #000;
+    background: linear-gradient(135deg, #2200aa 0%, #3800cc 50%, #2200aa 100%);
+    border-color: rgba(255, 255, 255, 0.25);
   }
 
-  .mubi-dot {
-    width: 6px;
-    height: 6px;
-    background-color: var(--accent);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--accent);
-    animation: mubi-pulse 2s infinite;
+  .mubi-logo {
+    height: 22px;
+    width: auto;
+    display: block;
+    filter: brightness(0) invert(1);
   }
 
-  @keyframes mubi-pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
+  .mubi-texte {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffffff;
   }
+
+  .mubi-arrow {
+    font-size: 14px;
+    opacity: 0.7;
+    color: #ffffff;
+  }
+
+  @keyframes pulse-mubi {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
   .film-prix {
     font-size: 12px;
     letter-spacing: 1.5px;
@@ -408,17 +419,19 @@ const prixImage = prix || null;
   .film-top-left {
     display: flex;
     flex-direction: column;
-    gap: 0; /* Réduit pour que le bandeau soit collé à l'image */
+    gap: 0;
     align-items: center;
+    align-self: stretch;
   }
 
   .film-image-principale {
     width: 100%;
-    height: auto;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
     display: block;
     cursor: pointer;
     transition: transform 0.4s ease;
+    flex: 1;
   }
   .film-image-principale:hover { transform: scale(1.03); }
 
