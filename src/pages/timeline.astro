@@ -1,8 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import presse from '../data/presse.json';
-import parcours from '../data/parcours.json';
-import prix from '../data/prix.json';
+import { getPresse, getPrix, getParcours } from '../lib/queries.ts';
+
+const presse = await getPresse();
+const prix = await getPrix();
+const parcours = await getParcours();
 
 const tous = [...presse, ...parcours, ...prix].sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 ---

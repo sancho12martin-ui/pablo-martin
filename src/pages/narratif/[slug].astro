@@ -1,10 +1,11 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getFilmImages } from '../../lib/cloudinary.js';
+import { getFilms } from '../../lib/queries.ts';
 
 export async function getStaticPaths() {
-  const films = await import('../../data/narratif.json');
-  return films.default.map((film: any) => ({
+  const films = await getFilms();
+  return films.map((film: any) => ({
     params: { slug: film.slug },
     props: { film },
   }));
@@ -132,12 +133,12 @@ const prixImage = prix || null;
       <div class="info-bloc">
         <div class="info-label">Crédits</div>
         <table class="info-table">
-          {film.credits && Object.entries(film.credits)
-            .filter(([, val]: [string, any]) => val !== null)
-            .map(([poste, nom]: [string, any]) => (
+          {film.credits && film.credits
+            .filter((credit: any) => credit.nom !== null)
+            .map((credit: any) => (
               <tr>
-                <td class="table-poste">{poste}</td>
-                <td class="table-nom">{nom}</td>
+                <td class="table-poste">{credit.poste}</td>
+                <td class="table-nom">{credit.nom}</td>
               </tr>
             ))
           }
@@ -217,44 +218,6 @@ const prixImage = prix || null;
 </Layout>
 
 <style>
-  .onglets {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    padding: 0 56px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .onglets::-webkit-scrollbar { display: none; }
-  .onglet-retour {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 20px 24px 20px 0;
-    margin-right: 16px;
-    border-right: 1px solid var(--border);
-    white-space: nowrap;
-    transition: color 0.2s;
-  }
-  .onglet-retour:hover { color: var(--accent); }
-  .onglet {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 20px 24px;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .onglet:hover { color: var(--text); }
-  .onglet.actif { color: var(--accent); border-bottom-color: var(--accent); }
-
   .film-titre-section {
     padding: 48px 56px 32px;
     border-bottom: 1px solid var(--border);
@@ -746,23 +709,6 @@ const prixImage = prix || null;
 
   /* ── MOBILE ── */
   @media (max-width: 768px) {
-    .onglets {
-      padding: 0 4px;
-    }
-
-    .onglet-retour {
-      font-size: clamp(8px, 2vw, 11px);
-      padding: 16px 8px 16px 0;
-      margin-right: 8px;
-      letter-spacing: 0.5px;
-    }
-
-    .onglet {
-      font-size: clamp(8px, 2.2vw, 12px);
-      padding: 16px clamp(6px, 1.8vw, 14px);
-      letter-spacing: 0.5px;
-    }
-
     .film-titre-section {
       padding: 28px 20px 24px;
     }

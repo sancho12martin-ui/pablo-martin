@@ -1,11 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import films from '../data/narratif.json';
 import { getFilmImages } from '../lib/cloudinary.js';
+import { getFilms } from '../lib/queries.ts';
 import { site } from '../config/site.ts';
 
+const filmsData = await getFilms();
+
 const filmsAvecImages = await Promise.all(
-  films.map(async (film: any) => {
+  filmsData.map(async (film: any) => {
     const { cover, images_film, prix } = await getFilmImages(film.slug);
     return {
       ...film,
@@ -140,35 +142,33 @@ const vimeoId = site.hero.vimeoId;
         <div class="film-infos-bas">
           {film.credits && (
             <p class="infos-ligne">
-              {film.credits['Production'] && (
+              {film.credits.find((c: any) => c.poste === 'Production') && (
                 <span class="infos-item">
                   <span class="infos-poste">Prod.</span>
-                  <span class="infos-nom">{film.credits['Production']}</span>
+                  <span class="infos-nom">{film.credits.find((c: any) => c.poste === 'Production').nom}</span>
                 </span>
               )}
-              {Object.entries(film.credits)
-                .filter(([key, val]: [string, any]) =>
-                  val !== null && (
-                    key === '1er assistant caméra' ||
-                    key === '2ème assistant caméra' ||
-                    key === '3ème assistant caméra' ||
-                    key === 'Assistant Caméra'
-                  )
-                )
-                .map(([, nom]: [string, any], i: number) => (
+              {film.credits
+                .filter((c: any) => c.nom !== null && (
+                  c.poste === '1er assistant caméra' ||
+                  c.poste === '2ème assistant caméra' ||
+                  c.poste === '3ème assistant caméra' ||
+                  c.poste === 'Assistant Caméra'
+                ))
+                .map((c: any, i: number) => (
                   <span class="infos-item">
                     {i === 0 && <span class="separateur-bloc">|</span>}
                     {i === 0 && <span class="infos-poste">Ass. Cam.</span>}
                     {i > 0 && <span class="sep">·</span>}
-                    <span class="infos-nom">{nom}</span>
+                    <span class="infos-nom">{c.nom}</span>
                   </span>
                 ))
               }
-              {film.credits['Prestataires techniques'] && (
+              {film.credits.find((c: any) => c.poste === 'Prestataires techniques') && (
                 <span class="infos-item">
                   <span class="separateur-bloc">|</span>
                   <span class="infos-poste">Prestataire Technique</span>
-                  {film.credits['Prestataires techniques'].split(' · ').map((p: string, i: number) => (
+                  {film.credits.find((c: any) => c.poste === 'Prestataires techniques').nom.split(' · ').map((p: string, i: number) => (
                     <span class="infos-item">
                       {i > 0 && <span class="sep">·</span>}
                       <span class="infos-nom">{p}</span>
@@ -371,33 +371,6 @@ const vimeoId = site.hero.vimeoId;
     padding-bottom: 8px;
   }
   .scroll-hint:hover { color: var(--accent); }
-
-  /* ── ONGLETS ── */
-  .onglets {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    padding: 0 56px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .onglets::-webkit-scrollbar { display: none; }
-  .onglet {
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 20px 24px;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .onglet:hover { color: var(--text); }
-  .onglet.actif { color: var(--accent); border-bottom-color: var(--accent); }
 
   /* ── FILMS ── */
   .films-liste {
@@ -803,16 +776,6 @@ const vimeoId = site.hero.vimeoId;
     }
 
     .scroll-hint { display: none; }
-
-    .onglets {
-      padding: 0 4px;
-    }
-
-    .onglet {
-      font-size: clamp(8px, 2.2vw, 12px);
-      padding: 16px clamp(6px, 1.8vw, 14px);
-      letter-spacing: 0.5px;
-    }
 
     .films-liste {
       padding: 32px 20px;
