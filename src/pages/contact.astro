@@ -31,11 +31,26 @@ import Layout from '../layouts/Layout.astro';
       <div class="info-bloc">
         <p class="info-label">Réseaux</p>
         <div class="reseaux">
-          <a href="https://www.instagram.com/instouzou/" target="_blank" rel="noopener" class="reseau-lien">Instagram</a>
-          <a href="https://vimeo.com/user128877784" target="_blank" rel="noopener" class="reseau-lien">Vimeo</a>
-          <a href="https://www.youtube.com/@Pablo12Martin" target="_blank" rel="noopener" class="reseau-lien">YouTube</a>
-          <a href="https://www.linkedin.com/in/pablo-martin-910780212/" target="_blank" rel="noopener" class="reseau-lien">LinkedIn</a>
-          <a href="https://www.lightyshare.com/fr/public/15940/show" target="_blank" rel="noopener" class="reseau-lien">Lightyshare</a>
+          <a href="https://www.instagram.com/instouzou/" target="_blank" rel="noopener" class="reseau-lien">
+            <img src="/images/instagram_logo.svg" alt="Instagram" class="reseau-logo" />
+            Instagram
+          </a>
+          <a href="https://vimeo.com/user128877784" target="_blank" rel="noopener" class="reseau-lien">
+            <img src="/images/vimeo_logo.svg" alt="Vimeo" class="reseau-logo" />
+            Vimeo
+          </a>
+          <a href="https://www.youtube.com/@Pablo12Martin" target="_blank" rel="noopener" class="reseau-lien">
+            <img src="/images/youtube_logo.svg" alt="YouTube" class="reseau-logo" />
+            YouTube
+          </a>
+          <a href="https://www.linkedin.com/in/pablo-martin-910780212/" target="_blank" rel="noopener" class="reseau-lien">
+            <img src="/images/linkedin_logo.svg" alt="LinkedIn" class="reseau-logo" />
+            LinkedIn
+          </a>
+          <a href="https://www.lightyshare.com/fr/public/15940/show" target="_blank" rel="noopener" class="reseau-lien">
+            <img src="/images/Lightyshare_logo.png" alt="Lightyshare" class="reseau-logo" />
+            Lightyshare
+          </a>
         </div>
       </div>
     </div>
@@ -119,21 +134,21 @@ import Layout from '../layouts/Layout.astro';
   .contact-body {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    gap: 10px;
+    gap: 80px;
     padding: 64px 56px;
+    align-items: start;
   }
 
-  /* ── INFOS ── */
   .contact-infos {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 48px;
   }
 
   .info-bloc {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 16px;
   }
 
   .info-label {
@@ -156,10 +171,13 @@ import Layout from '../layouts/Layout.astro';
   .reseaux {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 16px;
   }
 
   .reseau-lien {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-size: 14px;
     color: var(--text-muted);
     text-decoration: none;
@@ -168,7 +186,21 @@ import Layout from '../layouts/Layout.astro';
 
   .reseau-lien:hover { color: var(--accent); }
 
-  /* ── FORMULAIRE ── */
+  .reseau-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .reseau-lien:hover .reseau-logo {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(93%) sepia(61%) saturate(600%) hue-rotate(10deg) brightness(103%);
+  }
+
   .contact-form {
     display: flex;
     flex-direction: column;
@@ -238,6 +270,61 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .form-success.visible { display: block; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .onglets {
+      padding: 0 16px;
+    }
+
+    .onglet {
+      font-size: 10px;
+      padding: 16px 12px;
+      letter-spacing: 1px;
+    }
+
+    .contact-header {
+      padding: 40px 24px 32px;
+    }
+
+    .contact-titre {
+      font-size: 40px;
+    }
+
+    .contact-body {
+      grid-template-columns: 1fr;
+      gap: 48px;
+      padding: 40px 24px;
+    }
+
+    .contact-infos {
+      gap: 40px;
+    }
+
+    .info-bloc {
+      gap: 14px;
+    }
+
+    .reseaux {
+      gap: 20px;
+    }
+
+    .reseau-lien {
+      font-size: 15px;
+      gap: 14px;
+    }
+
+    .reseau-logo {
+      width: 20px;
+      height: 20px;
+    }
+
+    .form-submit {
+      width: 100%;
+      text-align: center;
+      padding: 18px;
+    }
+  }
 </style>
 
 <script is:inline>

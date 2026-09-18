@@ -76,12 +76,14 @@ const prixImage = prix || null;
   <section class="film-top">
     <div class="film-top-left">
       {imageHaut ? (
-        <img
-          src={imageHaut}
-          alt={film.titre}
-          class="film-image-principale"
-          id="affiche-img"
-        />
+        <div class={`image-wrapper ${affiche ? 'avec-affiche' : ''}`}>
+          <img
+            src={imageHaut}
+            alt={film.titre}
+            class="film-image-principale"
+            id="affiche-img"
+          />
+        </div>
       ) : (
         <div class="image-placeholder">
           <span>Image bientôt disponible</span>
@@ -323,58 +325,42 @@ const prixImage = prix || null;
     font-weight: 800;
   }
 
-  /* Style du bandeau MUBI */
   .bandeau-mubi {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 12px;
-    width: 100%;
+    padding: 5px 14px;
     background: linear-gradient(135deg, #1a0072 0%, #2d00b3 50%, #1a0072 100%);
-    color: #ffffff;
+    border: 1px solid rgba(100, 80, 255, 0.4);
     text-decoration: none;
-    padding: 14px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    width: fit-content;
+    transition: all 0.2s ease;
   }
 
   .bandeau-mubi:hover {
     background: linear-gradient(135deg, #2200aa 0%, #3800cc 50%, #2200aa 100%);
-    border-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(150, 120, 255, 0.6);
   }
 
   .mubi-logo {
-    height: 22px;
+    height: 16px;
     width: auto;
     display: block;
     filter: brightness(0) invert(1);
   }
 
   .mubi-texte {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     color: #ffffff;
   }
 
   .mubi-arrow {
-    font-size: 14px;
-    opacity: 0.7;
+    font-size: 11px;
     color: #ffffff;
-  }
-
-  @keyframes pulse-mubi {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.3); opacity: 0.5; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  .film-prix {
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--accent);
+    opacity: 0.7;
   }
 
   .film-prix-bandeau {
@@ -409,38 +395,49 @@ const prixImage = prix || null;
 
   .film-top {
     display: grid;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 1fr 1.8fr;
     gap: 56px;
     padding: 56px;
     border-bottom: 1px solid var(--border);
-    align-items: stretch;
+    align-items: start;
   }
 
   .film-top-left {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 12px;
     align-items: center;
-    align-self: stretch;
+    position: sticky;
+    top: 80px;
+  }
+
+  .image-wrapper {
+    width: 100%;
+  }
+
+  .image-wrapper.avec-affiche {
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow:
+      0 0 0 1px rgba(232, 255, 0, 0.06),
+      0 4px 32px rgba(0, 0, 0, 0.4);
   }
 
   .film-image-principale {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     display: block;
     cursor: pointer;
     transition: transform 0.4s ease;
-    flex: 1;
   }
   .film-image-principale:hover { transform: scale(1.03); }
 
-  .film-duree {
-    text-transform: none;
-  }
+  .film-duree { text-transform: none; }
+
   .image-placeholder {
     width: 100%;
-    flex: 1;
     background: var(--bg-surface);
     display: flex;
     align-items: center;
@@ -454,7 +451,6 @@ const prixImage = prix || null;
   }
 
   .image-legende {
-    margin-top: 12px;
     font-size: 11px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -746,6 +742,134 @@ const prixImage = prix || null;
     font-size: 12px;
     letter-spacing: 2px;
     color: rgba(255,255,255,0.4);
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .onglets {
+      padding: 0 4px;
+    }
+
+    .onglet-retour {
+      font-size: clamp(8px, 2vw, 11px);
+      padding: 16px 8px 16px 0;
+      margin-right: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .onglet {
+      font-size: clamp(8px, 2.2vw, 12px);
+      padding: 16px clamp(6px, 1.8vw, 14px);
+      letter-spacing: 0.5px;
+    }
+
+    .film-titre-section {
+      padding: 28px 20px 24px;
+    }
+
+    .film-titre {
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    .film-meta-top {
+      font-size: 10px;
+      gap: 6px;
+    }
+
+    .role-tag {
+      font-size: 10px;
+      padding: 3px 8px;
+    }
+
+    .film-prix-bandeau {
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .film-prix-bandeau-logo {
+      height: 60px;
+    }
+
+    .film-prix-bandeau-texte {
+      font-size: 12px;
+    }
+
+    .bandeau-mubi {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .film-top {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding: 28px 20px;
+    }
+
+    .film-top-left {
+      position: static;
+    }
+
+    .image-placeholder {
+      min-height: 200px;
+    }
+
+    .film-top-right {
+      gap: 28px;
+    }
+
+    .synopsis-texte {
+      font-size: 14px;
+    }
+
+    .table-poste {
+      font-size: 10px;
+      padding: 10px 0;
+      width: 40%;
+    }
+
+    .table-nom {
+      font-size: 12px;
+      padding: 10px 0;
+    }
+
+    .film-video {
+      padding: 32px 20px;
+    }
+
+    .film-galerie {
+      padding: 32px 20px;
+    }
+
+    .galerie-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+    }
+
+    .film-mosaique {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      min-height: 300px;
+    }
+
+    .film-nav {
+      padding: 28px 20px;
+    }
+
+    .affiche-lightbox-img {
+      max-width: 92vw;
+      max-height: 85vh;
+    }
+
+    .lightbox-prev { left: 12px; }
+    .lightbox-next { right: 12px; }
+
+    .lightbox-prev,
+    .lightbox-next {
+      width: 36px;
+      height: 36px;
+      font-size: 24px;
+    }
   }
 </style>
 

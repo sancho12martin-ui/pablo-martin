@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import films from '../data/narratif.json';
 import { getFilmImages } from '../lib/cloudinary.js';
+import { site } from '../config/site.ts';
 
 const filmsAvecImages = await Promise.all(
   films.map(async (film: any) => {
@@ -15,17 +16,8 @@ const filmsAvecImages = await Promise.all(
   })
 );
 
-const reseaux = [
-  { nom: "Email", url: "mailto:pablo12martin@gmail.com", actif: true, img: `/images/mail_logo.svg`, classe: 'mail-img' },
-  { nom: "Instagram", url: "https://www.instagram.com/instouzou/", actif: true, img: `/images/instagram_logo.svg` },
-  { nom: "Vimeo", url: "https://vimeo.com/user128877784", actif: true, img: `/images/vimeo_logo.svg` },
-  { nom: "YouTube", url: "https://www.youtube.com/@Pablo12Martin", actif: true, img: `/images/youtube_logo.svg` },
-  { nom: "Lightyshare", url: "https://www.lightyshare.com/fr/public/15940/show", actif: true, img: `/images/Lightyshare_logo.png`, classe: 'lighty-img' },
-  { nom: "LinkedIn", url: "https://www.linkedin.com/in/pablo-martin-910780212/", actif: true, img: `/images/linkedin_logo.svg` },
-  { nom: "IMDb", url: null, actif: true, img: `/images/IMBd_logo.png`, classe: 'imdb-img' },
-];
-
-const vimeoId = "1191904895";
+const reseaux = site.reseaux;
+const vimeoId = site.hero.vimeoId;
 ---
 
 <Layout title="Pablo Martin — Directeur de la Photographie">
@@ -52,13 +44,13 @@ const vimeoId = "1191904895";
             r.actif ? (
               <a href={r.url} target="_blank" rel="noopener" class="reseau-btn actif" aria-label={r.nom}>
                 <span class="reseau-icone">
-                  <img src={r.img} alt={r.nom} class={`reseau-img ${'classe' in r ? r.classe : ''}`} />
+                  <img src={r.img} alt={r.nom} class={`reseau-img ${r.classe || ''}`} />
                 </span>
               </a>
             ) : (
               <span class="reseau-btn inactif" title={`${r.nom} — bientôt disponible`}>
                 <span class="reseau-icone">
-                  <img src={r.img} alt={r.nom} class={`reseau-img inactif-img ${'classe' in r ? r.classe : ''}`} />
+                  <img src={r.img} alt={r.nom} class={`reseau-img inactif-img ${r.classe || ''}`} />
                 </span>
               </span>
             )
@@ -83,7 +75,7 @@ const vimeoId = "1191904895";
 
   <section class="films-liste" id="narratif">
     {filmsAvecImages.map((film: any) => (
-      <article class="film-card">
+      <article class="film-card" data-annee-film={String(film.annee)}>
 
         <div class="film-header">
           <h2 class="film-titre">
@@ -218,6 +210,7 @@ const vimeoId = "1191904895";
 </Layout>
 
 <style>
+  /* ── HERO ── */
   .hero {
     position: relative;
     width: 100%;
@@ -379,6 +372,7 @@ const vimeoId = "1191904895";
   }
   .scroll-hint:hover { color: var(--accent); }
 
+  /* ── ONGLETS ── */
   .onglets {
     position: sticky;
     top: 0;
@@ -405,6 +399,7 @@ const vimeoId = "1191904895";
   .onglet:hover { color: var(--text); }
   .onglet.actif { color: var(--accent); border-bottom-color: var(--accent); }
 
+  /* ── FILMS ── */
   .films-liste {
     padding: 64px 56px;
     display: flex;
@@ -524,6 +519,7 @@ const vimeoId = "1191904895";
     width: fit-content;
     transition: all 0.2s ease;
   }
+
   .bandeau-mubi:hover {
     background: linear-gradient(135deg, #2200aa 0%, #3800cc 50%, #2200aa 100%);
     border-color: rgba(150, 120, 255, 0.6);
@@ -570,7 +566,6 @@ const vimeoId = "1191904895";
     width: 100%; height: 100%;
     object-fit: cover;
     transition: transform 0.6s ease;
-    filter: none;
   }
   .cover-placeholder {
     width: 100%; height: 100%;
@@ -625,7 +620,6 @@ const vimeoId = "1191904895";
     width: 100%; height: 100%;
     object-fit: cover;
     transition: transform 0.4s ease;
-    filter: none;
     pointer-events: none;
   }
   .mosaique-item:hover img { transform: scale(1.10); }
@@ -694,6 +688,7 @@ const vimeoId = "1191904895";
 
   .camera-emoji { font-size: 16px; }
 
+  /* ── LIGHTBOX ── */
   .lightbox {
     position: fixed;
     inset: 0;
@@ -769,6 +764,131 @@ const vimeoId = "1191904895";
 
   @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeIn { to { opacity: 1; } }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .hero {
+      height: 60vh;
+      min-height: 360px;
+    }
+
+    .hero-content {
+      padding: 0 24px 28px;
+    }
+
+    .hero-nom {
+      font-size: 48px;
+      letter-spacing: 2px;
+      white-space: normal;
+    }
+
+    .hero-fonction {
+      font-size: 14px;
+      letter-spacing: 2px;
+      white-space: normal;
+    }
+
+    .reseaux {
+      margin-top: 12px;
+    }
+
+    .reseau-img {
+      width: 22px !important;
+      height: 22px !important;
+    }
+
+    .imdb-img {
+      width: 32px !important;
+      height: 32px !important;
+    }
+
+    .scroll-hint { display: none; }
+
+    .onglets {
+      padding: 0 4px;
+    }
+
+    .onglet {
+      font-size: clamp(8px, 2.2vw, 12px);
+      padding: 16px clamp(6px, 1.8vw, 14px);
+      letter-spacing: 0.5px;
+    }
+
+    .films-liste {
+      padding: 32px 20px;
+    }
+
+    .film-card { padding: 32px 0; }
+
+    .film-separateur { margin-top: 32px; }
+
+    .film-titre {
+      font-size: 26px;
+    }
+
+    .film-meta {
+      font-size: 10px;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .film-roles {
+      gap: 6px;
+    }
+
+    .role-tag {
+      font-size: 10px;
+      padding: 3px 8px;
+    }
+
+    .film-prix-bandeau {
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .film-prix-bandeau-logo {
+      height: 48px;
+    }
+
+    .film-prix-bandeau-texte {
+      font-size: 11px;
+    }
+
+    .film-visuel {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .film-mosaique {
+      display: none;
+    }
+
+    .film-cover {
+      min-height: 240px;
+    }
+
+    .cover-placeholder {
+      min-height: 240px;
+    }
+
+    .film-infos-bas {
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+
+    .infos-nom {
+      font-size: 11px;
+    }
+
+    .infos-poste {
+      font-size: 10px;
+    }
+
+    .bandeau-mubi {
+      width: 100%;
+      justify-content: center;
+    }
+  }
 </style>
 
 <script is:inline>
