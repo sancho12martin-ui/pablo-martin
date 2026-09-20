@@ -52,7 +52,7 @@ export const site = {
     },
     {
       nom: "IMDb",
-      url: null,
+      url: "https://www.imdb.com/fr/name/nm18850502/",
       actif: true,
       img: "/images/IMBd_logo.png",
       classe: "imdb-img",

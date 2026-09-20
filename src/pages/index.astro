@@ -20,6 +20,8 @@ const filmsAvecImages = await Promise.all(
 
 const reseaux = site.reseaux;
 const vimeoId = site.hero.vimeoId;
+
+const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || []))].sort();
 ---
 
 <Layout title="Pablo Martin — Directeur de la Photographie">
@@ -75,9 +77,29 @@ const vimeoId = site.hero.vimeoId;
     <a href="/contact" class="onglet">Contact</a>
   </nav>
 
+  <div class="filtres-bar" id="filtres-bar">
+    <div class="filtre-groupe">
+      <label class="filtre-label" for="filtre-poste">Poste</label>
+      <select class="filtre-select" id="filtre-poste">
+        <option value="">Tous</option>
+        {tousLesRoles.map((role: string) => (
+          <option value={role}>{role}</option>
+        ))}
+      </select>
+    </div>
+    <div class="filtre-groupe">
+      <label class="filtre-label" for="filtre-tri">Année</label>
+      <select class="filtre-select" id="filtre-tri">
+        <option value="desc">Plus récent</option>
+        <option value="asc">Plus ancien</option>
+      </select>
+    </div>
+    <button class="filtre-reset" id="filtre-reset">Réinitialiser</button>
+  </div>
+
   <section class="films-liste" id="narratif">
     {filmsAvecImages.map((film: any) => (
-      <article class="film-card" data-annee-film={String(film.annee)}>
+      <article class="film-card" data-roles={JSON.stringify(film.roles || [])} data-annee={String(film.annee)}>
 
         <div class="film-header">
           <h2 class="film-titre">
@@ -141,42 +163,46 @@ const vimeoId = site.hero.vimeoId;
 
         <div class="film-infos-bas">
           {film.credits && (
-            <p class="infos-ligne">
-              {film.credits.find((c: any) => c.poste === 'Production') && (
-                <span class="infos-item">
+            <div class="infos-ligne">
+              {film.credits.find((c: any) => c.poste === 'Production' && c.nom) && (
+                <p class="infos-item-ligne">
                   <span class="infos-poste">Prod.</span>
                   <span class="infos-nom">{film.credits.find((c: any) => c.poste === 'Production').nom}</span>
-                </span>
+                </p>
               )}
-              {film.credits
-                .filter((c: any) => c.nom !== null && (
+              {film.credits.filter((c: any) =>
+                c.nom && (
                   c.poste === '1er assistant caméra' ||
                   c.poste === '2ème assistant caméra' ||
                   c.poste === '3ème assistant caméra' ||
                   c.poste === 'Assistant Caméra'
-                ))
-                .map((c: any, i: number) => (
-                  <span class="infos-item">
-                    {i === 0 && <span class="separateur-bloc">|</span>}
-                    {i === 0 && <span class="infos-poste">Ass. Cam.</span>}
-                    {i > 0 && <span class="sep">·</span>}
-                    <span class="infos-nom">{c.nom}</span>
-                  </span>
-                ))
-              }
-              {film.credits.find((c: any) => c.poste === 'Prestataires techniques') && (
-                <span class="infos-item">
-                  <span class="separateur-bloc">|</span>
-                  <span class="infos-poste">Prestataire Technique</span>
-                  {film.credits.find((c: any) => c.poste === 'Prestataires techniques').nom.split(' · ').map((p: string, i: number) => (
-                    <span class="infos-item">
-                      {i > 0 && <span class="sep">·</span>}
-                      <span class="infos-nom">{p}</span>
-                    </span>
-                  ))}
-                </span>
+                )
+              ).length > 0 && (
+                <p class="infos-item-ligne">
+                  <span class="infos-poste">Ass. Cam.</span>
+                  {film.credits
+                    .filter((c: any) => c.nom && (
+                      c.poste === '1er assistant caméra' ||
+                      c.poste === '2ème assistant caméra' ||
+                      c.poste === '3ème assistant caméra' ||
+                      c.poste === 'Assistant Caméra'
+                    ))
+                    .map((c: any, i: number) => (
+                      <span class="infos-item">
+                        {i > 0 && <span class="sep-inline">·</span>}
+                        <span class="infos-nom">{c.nom}</span>
+                      </span>
+                    ))
+                  }
+                </p>
               )}
-            </p>
+              {film.credits.find((c: any) => c.poste === 'Prestataires techniques' && c.nom) && (
+                <p class="infos-item-ligne">
+                  <span class="infos-poste">Prestataire</span>
+                  <span class="infos-nom">{film.credits.find((c: any) => c.poste === 'Prestataires techniques').nom}</span>
+                </p>
+              )}
+            </div>
           )}
           {film.cameras && (
             <div class="cameras-bloc">
@@ -372,9 +398,92 @@ const vimeoId = site.hero.vimeoId;
   }
   .scroll-hint:hover { color: var(--accent); }
 
+  /* ── FILTRES ── */
+  .filtres-bar {
+    position: sticky;
+    top: 57px;
+    z-index: 49;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 56px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filtre-groupe {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .filtre-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .filtre-select {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 6px 28px 6px 12px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a8099' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color 0.2s, color 0.2s;
+    min-width: 180px;
+  }
+
+  .filtre-select:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+  }
+
+  .filtre-select.actif {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .filtre-select option {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .filtre-reset {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, color 0.2s;
+  }
+
+  .filtre-reset.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .filtre-reset:hover { color: var(--accent); }
+
+  .film-card.masque { display: none; }
+
   /* ── FILMS ── */
   .films-liste {
-    padding: 64px 56px;
+    padding: 32px 56px;
     display: flex;
     flex-direction: column;
   }
@@ -597,6 +706,7 @@ const vimeoId = site.hero.vimeoId;
   }
   .mosaique-item:hover img { transform: scale(1.10); }
 
+  /* ── INFOS BAS ── */
   .film-infos-bas {
     margin-top: 16px;
     padding-top: 16px;
@@ -613,10 +723,23 @@ const vimeoId = site.hero.vimeoId;
     gap: 4px;
   }
 
+  .infos-item-ligne {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
   .infos-item {
     display: flex;
     align-items: center;
     gap: 4px;
+  }
+
+  .sep-inline {
+    color: var(--text-muted);
+    opacity: 0.5;
+    margin: 0 2px;
   }
 
   .infos-row {
@@ -632,6 +755,7 @@ const vimeoId = site.hero.vimeoId;
     text-transform: uppercase;
     color: var(--accent);
     opacity: 0.7;
+    flex-shrink: 0;
   }
 
   .infos-nom {
@@ -645,18 +769,11 @@ const vimeoId = site.hero.vimeoId;
     font-size: 10px;
   }
 
-  .separateur-bloc {
-    color: var(--text-muted);
-    font-size: 16px;
-    margin: 0 8px;
-    opacity: 0.5;
-  }
-
   .cameras-bloc {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    line-height: 1.2;
+    gap: 2px;
+    line-height: 1.4;
   }
 
   .camera-emoji { font-size: 16px; }
@@ -761,9 +878,7 @@ const vimeoId = site.hero.vimeoId;
       white-space: normal;
     }
 
-    .reseaux {
-      margin-top: 12px;
-    }
+    .reseaux { margin-top: 12px; }
 
     .reseau-img {
       width: 22px !important;
@@ -777,17 +892,28 @@ const vimeoId = site.hero.vimeoId;
 
     .scroll-hint { display: none; }
 
-    .films-liste {
-      padding: 32px 20px;
+    .filtres-bar {
+      top: 45px;
+      padding: 8px 16px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
+
+    .filtre-select {
+      font-size: 10px;
+      padding: 3px 20px 3px 8px;
+      min-width: 120px;
+    }
+
+    .filtre-label { font-size: 9px; }
+
+    .films-liste { padding: 24px 20px; }
 
     .film-card { padding: 32px 0; }
 
     .film-separateur { margin-top: 32px; }
 
-    .film-titre {
-      font-size: 26px;
-    }
+    .film-titre { font-size: 26px; }
 
     .film-meta {
       font-size: 10px;
@@ -795,9 +921,7 @@ const vimeoId = site.hero.vimeoId;
       flex-wrap: wrap;
     }
 
-    .film-roles {
-      gap: 6px;
-    }
+    .film-roles { gap: 6px; }
 
     .role-tag {
       font-size: 10px;
@@ -809,42 +933,48 @@ const vimeoId = site.hero.vimeoId;
       padding: 12px 16px;
     }
 
-    .film-prix-bandeau-logo {
-      height: 48px;
-    }
-
-    .film-prix-bandeau-texte {
-      font-size: 11px;
-    }
+    .film-prix-bandeau-logo { height: 48px; }
+    .film-prix-bandeau-texte { font-size: 11px; }
 
     .film-visuel {
       grid-template-columns: 1fr;
       gap: 4px;
     }
 
+    .film-cover { min-height: 240px; }
+    .cover-placeholder { min-height: 240px; }
+
     .film-mosaique {
-      display: none;
-    }
-
-    .film-cover {
-      min-height: 240px;
-    }
-
-    .cover-placeholder {
-      min-height: 240px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 3px;
+      height: auto;
+      aspect-ratio: 3 / 1;
     }
 
     .film-infos-bas {
       margin-top: 12px;
       padding-top: 12px;
+      gap: 8px;
     }
 
-    .infos-nom {
-      font-size: 11px;
+    .infos-ligne {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
     }
 
-    .infos-poste {
-      font-size: 10px;
+    .infos-item-ligne { flex-wrap: nowrap; }
+
+    .infos-nom { font-size: 11px; }
+    .infos-poste { font-size: 10px; }
+
+    .cameras-bloc { gap: 8px; }
+
+    .camera-row {
+      flex-wrap: wrap;
+      gap: 4px;
     }
 
     .bandeau-mubi {
@@ -855,6 +985,50 @@ const vimeoId = site.hero.vimeoId;
 </style>
 
 <script is:inline>
+  // ── FILTRES ──
+  const filtrePoste = document.getElementById('filtre-poste');
+  const filtreTri = document.getElementById('filtre-tri');
+  const filtreReset = document.getElementById('filtre-reset');
+  const filmsListe = document.getElementById('narratif');
+  const cards = Array.from(document.querySelectorAll('.film-card'));
+
+  function appliquerFiltres() {
+    const poste = filtrePoste.value;
+    const tri = filtreTri.value;
+    const actif = poste !== '' || tri !== 'desc';
+
+    filtreReset.classList.toggle('visible', actif);
+    filtrePoste.classList.toggle('actif', poste !== '');
+    filtreTri.classList.toggle('actif', tri !== 'desc');
+
+    cards.forEach(function(card) {
+      const roles = JSON.parse(card.getAttribute('data-roles') || '[]');
+      const visible = poste === '' || roles.includes(poste);
+      card.classList.toggle('masque', !visible);
+    });
+
+    const cardsVisibles = cards.filter(c => !c.classList.contains('masque'));
+    cardsVisibles.sort(function(a, b) {
+      const anneeA = parseInt(a.getAttribute('data-annee') || '0');
+      const anneeB = parseInt(b.getAttribute('data-annee') || '0');
+      return tri === 'asc' ? anneeA - anneeB : anneeB - anneeA;
+    });
+
+    cardsVisibles.forEach(function(card) {
+      filmsListe.appendChild(card);
+    });
+  }
+
+  filtrePoste.addEventListener('change', appliquerFiltres);
+  filtreTri.addEventListener('change', appliquerFiltres);
+
+  filtreReset.addEventListener('click', function() {
+    filtrePoste.value = '';
+    filtreTri.value = 'desc';
+    appliquerFiltres();
+  });
+
+  // ── LIGHTBOX ──
   let currentPhotos = [];
   let currentIndex = 0;
 
