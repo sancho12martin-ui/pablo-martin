@@ -56,6 +56,11 @@ const reseaux = site.reseaux;
 const vimeoId = site.hero.vimeoId;
 
 const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || []))].sort();
+
+const nbParRole: Record<string, number> = {};
+filmsAvecImages.forEach((f: any) =>
+  (f.roles || []).forEach((r: string) => { nbParRole[r] = (nbParRole[r] || 0) + 1; })
+);
 ---
 
 <Layout title="Pablo Martin — Directeur de la Photographie">
@@ -104,31 +109,50 @@ const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || 
   </section>
 
   <nav class="onglets" id="nav-onglets">
-    <a href="#narratif" class="onglet actif">Narratif</a>
+    <button type="button" class="onglet actif onglet-filtre" id="btn-filtres" aria-expanded="false" aria-controls="panneau-filtres">
+      Narratif
+      <span class="filtre-badge" id="filtre-badge"></span>
+      <svg class="chevron" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true">
+        <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
     <a href="/video" class="onglet">Vidéo</a>
     <a href="/etalonnage" class="onglet">Étalonnage</a>
     <a href="/timeline" class="onglet">Timeline</a>
     <a href="/contact" class="onglet">Contact</a>
   </nav>
 
-  <div class="filtres-bar" id="filtres-bar">
-    <div class="filtre-groupe">
-      <label class="filtre-label" for="filtre-poste">Poste</label>
-      <select class="filtre-select" id="filtre-poste">
-        <option value="">Tous</option>
-        {tousLesRoles.map((role: string) => (
-          <option value={role}>{role}</option>
-        ))}
-      </select>
+  <div class="panneau-filtres" id="panneau-filtres" role="region" aria-label="Filtres">
+    <div class="pf-section">
+      <p class="pf-titre">Voir Pablo en tant que…</p>
+      {tousLesRoles.map((role: string) => (
+        <label class="pf-check">
+          <input type="checkbox" name="role" value={role} />
+          <span class="pf-boite"></span>
+          <span class="pf-texte">{role}</span>
+          <span class="pf-nb">{nbParRole[role]}</span>
+        </label>
+      ))}
     </div>
-    <div class="filtre-groupe">
-      <label class="filtre-label" for="filtre-tri">Année</label>
-      <select class="filtre-select" id="filtre-tri">
-        <option value="desc">Plus récent</option>
-        <option value="asc">Plus ancien</option>
-      </select>
+
+    <div class="pf-section">
+      <p class="pf-titre">Trier par année</p>
+      <label class="pf-radio">
+        <input type="radio" name="tri" value="desc" checked />
+        <span class="pf-boite"></span>
+        <span class="pf-texte">Plus récent</span>
+      </label>
+      <label class="pf-radio">
+        <input type="radio" name="tri" value="asc" />
+        <span class="pf-boite"></span>
+        <span class="pf-texte">Plus ancien</span>
+      </label>
     </div>
-    <button class="filtre-reset" id="filtre-reset">Réinitialiser</button>
+
+    <div class="pf-pied">
+      <button type="button" class="filtre-reset" id="filtre-reset">Réinitialiser</button>
+      <span class="pf-resultat" id="pf-resultat"></span>
+    </div>
   </div>
 
   <section class="films-liste" id="narratif">
@@ -405,66 +429,7 @@ const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || 
   }
   .scroll-hint:hover { color: var(--accent); }
 
-  /* ── FILTRES ── */
-  .filtres-bar {
-    position: sticky;
-    top: 57px;
-    z-index: 49;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: 14px 56px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .filtre-groupe {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .filtre-label {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    white-space: nowrap;
-  }
-
-  .filtre-select {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 12px;
-    letter-spacing: 1px;
-    padding: 6px 28px 6px 12px;
-    cursor: pointer;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a8099' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    transition: border-color 0.2s, color 0.2s;
-    min-width: 180px;
-  }
-
-  .filtre-select:hover {
-    border-color: var(--text-muted);
-    color: var(--text);
-  }
-
-  .filtre-select.actif {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .filtre-select option {
-    background: var(--bg);
-    color: var(--text);
-  }
-
+  /* ── BOUTON RÉINITIALISER ── */
   .filtre-reset {
     font-size: 10px;
     letter-spacing: 1.5px;
@@ -487,6 +452,161 @@ const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || 
   .filtre-reset:hover { color: var(--accent); }
 
   .film-card.masque { display: none; }
+
+  /* ── ONGLET NARRATIF + PANNEAU DE FILTRES ── */
+  .onglet-filtre {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 20px 24px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .onglets .onglet-filtre.actif { color: var(--accent); border-bottom-color: var(--accent); }
+  .onglet-filtre:hover { color: var(--text); }
+  .onglets .onglet-filtre.actif:hover { color: var(--accent); }
+
+  .chevron {
+    transition: transform 0.25s ease;
+    animation: invite 1.2s ease 2s 3;
+  }
+  .onglet-filtre[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+    animation: none;
+  }
+  @keyframes invite {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
+  }
+
+  .filtre-badge {
+    display: none;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 10px;
+    letter-spacing: 0;
+    font-weight: 800;
+    align-items: center;
+    justify-content: center;
+  }
+  .filtre-badge.visible { display: inline-flex; }
+
+  .panneau-filtres {
+    position: fixed;
+    z-index: 60;
+    width: min(400px, calc(100vw - 32px));
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .panneau-filtres.ouvert {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .pf-section { display: flex; flex-direction: column; gap: 2px; }
+
+  .pf-titre {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .pf-check, .pf-radio {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .pf-check:hover, .pf-radio:hover { color: var(--text); }
+  .pf-check input, .pf-radio input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pf-boite {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .pf-radio .pf-boite { border-radius: 50%; }
+
+  .pf-check input:checked + .pf-boite { background: var(--accent); border-color: var(--accent); }
+  .pf-check input:checked + .pf-boite::after {
+    content: '';
+    width: 4px;
+    height: 8px;
+    border: solid var(--bg);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+  .pf-radio input:checked + .pf-boite { border-color: var(--accent); }
+  .pf-radio input:checked + .pf-boite::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .pf-check input:checked ~ .pf-texte,
+  .pf-radio input:checked ~ .pf-texte { color: var(--text); }
+  .pf-check input:focus-visible + .pf-boite,
+  .pf-radio input:focus-visible + .pf-boite { outline: 1px solid var(--accent); outline-offset: 2px; }
+
+  .pf-nb { margin-left: auto; font-size: 11px; opacity: 0.5; }
+
+  .pf-pied {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .pf-resultat {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
 
   /* ── FILMS ── */
   .films-liste {
@@ -901,20 +1021,8 @@ const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || 
 
     .scroll-hint { display: none; }
 
-    .filtres-bar {
-      top: 45px;
-      padding: 8px 16px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .filtre-select {
-      font-size: 10px;
-      padding: 3px 20px 3px 8px;
-      min-width: 120px;
-    }
-
-    .filtre-label { font-size: 9px; }
+    .onglet-filtre { font-size: 10px; padding: 16px 12px; letter-spacing: 1px; }
+    .panneau-filtres { padding: 20px; }
 
     .films-liste { padding: 24px 20px; }
 
@@ -995,24 +1103,68 @@ const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || 
 
 <script is:inline>
   // ── FILTRES ──
-  const filtrePoste = document.getElementById('filtre-poste');
-  const filtreTri = document.getElementById('filtre-tri');
+  const nav = document.getElementById('nav-onglets');
+  const btnFiltres = document.getElementById('btn-filtres');
+  const panneau = document.getElementById('panneau-filtres');
+  const badge = document.getElementById('filtre-badge');
   const filtreReset = document.getElementById('filtre-reset');
+  const resultat = document.getElementById('pf-resultat');
   const filmsListe = document.getElementById('narratif');
   const cards = Array.from(document.querySelectorAll('.film-card'));
+  const checks = Array.from(document.querySelectorAll('input[name="role"]'));
+  const radios = Array.from(document.querySelectorAll('input[name="tri"]'));
+
+  function positionner() {
+    const nb = nav.getBoundingClientRect();
+    const bb = btnFiltres.getBoundingClientRect();
+    panneau.style.top = nb.bottom + 'px';
+    const largeur = panneau.offsetWidth;
+    const left = Math.min(Math.max(16, bb.left), window.innerWidth - largeur - 16);
+    panneau.style.left = left + 'px';
+  }
+
+  function ouvrir() {
+    if (nav.getBoundingClientRect().top > 1) {
+      nav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    positionner();
+    panneau.classList.add('ouvert');
+    btnFiltres.setAttribute('aria-expanded', 'true');
+  }
+
+  function fermer() {
+    panneau.classList.remove('ouvert');
+    btnFiltres.setAttribute('aria-expanded', 'false');
+  }
+
+  btnFiltres.addEventListener('click', function() {
+    panneau.classList.contains('ouvert') ? fermer() : ouvrir();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!panneau.classList.contains('ouvert')) return;
+    if (panneau.contains(e.target) || btnFiltres.contains(e.target)) return;
+    fermer();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') fermer();
+  });
+
+  window.addEventListener('scroll', function() {
+    if (panneau.classList.contains('ouvert')) positionner();
+  }, { passive: true });
+  window.addEventListener('resize', function() {
+    if (panneau.classList.contains('ouvert')) positionner();
+  });
 
   function appliquerFiltres() {
-    const poste = filtrePoste.value;
-    const tri = filtreTri.value;
-    const actif = poste !== '' || tri !== 'desc';
-
-    filtreReset.classList.toggle('visible', actif);
-    filtrePoste.classList.toggle('actif', poste !== '');
-    filtreTri.classList.toggle('actif', tri !== 'desc');
+    const rolesChoisis = checks.filter(c => c.checked).map(c => c.value);
+    const tri = radios.find(r => r.checked).value;
 
     cards.forEach(function(card) {
       const roles = JSON.parse(card.getAttribute('data-roles') || '[]');
-      const visible = poste === '' || roles.includes(poste);
+      const visible = rolesChoisis.length === 0 || rolesChoisis.some(r => roles.includes(r));
       card.classList.toggle('masque', !visible);
     });
 
@@ -1022,20 +1174,25 @@ const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || 
       const anneeB = parseInt(b.getAttribute('data-annee') || '0');
       return tri === 'asc' ? anneeA - anneeB : anneeB - anneeA;
     });
+    cardsVisibles.forEach(function(card) { filmsListe.appendChild(card); });
 
-    cardsVisibles.forEach(function(card) {
-      filmsListe.appendChild(card);
-    });
+    const nbFiltres = rolesChoisis.length + (tri !== 'desc' ? 1 : 0);
+    badge.textContent = String(nbFiltres);
+    badge.classList.toggle('visible', nbFiltres > 0);
+    filtreReset.classList.toggle('visible', nbFiltres > 0);
+    resultat.textContent = cardsVisibles.length + (cardsVisibles.length > 1 ? ' films' : ' film');
   }
 
-  filtrePoste.addEventListener('change', appliquerFiltres);
-  filtreTri.addEventListener('change', appliquerFiltres);
+  checks.forEach(c => c.addEventListener('change', appliquerFiltres));
+  radios.forEach(r => r.addEventListener('change', appliquerFiltres));
 
   filtreReset.addEventListener('click', function() {
-    filtrePoste.value = '';
-    filtreTri.value = 'desc';
+    checks.forEach(c => { c.checked = false; });
+    radios.forEach(r => { r.checked = r.value === 'desc'; });
     appliquerFiltres();
   });
+
+  appliquerFiltres();
 
   // ── LIGHTBOX ──
   let currentPhotos = [];
