@@ -4,6 +4,39 @@ import { getFilmImages } from '../lib/cloudinary.js';
 import { getFilms } from '../lib/queries.ts';
 import { site } from '../config/site.ts';
 
+const norm = (s: string) =>
+  (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
+// Ne garde que les crédits étoilés, regroupés par catégorie
+function creditsAffiches(credits: any[] = []) {
+  const items = (credits || []).filter((c: any) => c.afficher && c.nom && c.poste);
+
+  const estProd = (p: string) => norm(p) === 'production' || norm(p).includes('producteur');
+  const estAssCam = (p: string) => norm(p).includes('assistant camera') || norm(p).includes('assistante camera');
+  const estPresta = (p: string) => norm(p).includes('prestataire');
+
+  // 1er, 2ème, 3ème assistant : triés par rang
+  const rang = (p: string) => { const n = parseInt(p); return isNaN(n) ? 9 : n; };
+
+  const groupes: { label: string; noms: string[] }[] = [];
+
+  const prod = items.filter((c: any) => estProd(c.poste));
+  if (prod.length) groupes.push({ label: 'Prod.', noms: prod.map((c: any) => c.nom) });
+
+  const cam = items.filter((c: any) => estAssCam(c.poste)).sort((a: any, b: any) => rang(a.poste) - rang(b.poste));
+  if (cam.length) groupes.push({ label: 'Ass. Cam.', noms: cam.map((c: any) => c.nom) });
+
+  const presta = items.filter((c: any) => estPresta(c.poste));
+  if (presta.length) groupes.push({ label: 'Prestataire', noms: presta.map((c: any) => c.nom) });
+
+  // Tout autre poste étoilé : sa propre ligne
+  items
+    .filter((c: any) => !estProd(c.poste) && !estAssCam(c.poste) && !estPresta(c.poste))
+    .forEach((c: any) => groupes.push({ label: c.poste, noms: [c.nom] }));
+
+  return groupes;
+}
+
 const filmsData = await getFilms();
 
 const filmsAvecImages = await Promise.all(
@@ -14,6 +47,7 @@ const filmsAvecImages = await Promise.all(
       cover: cover || null,
       photos: images_film,
       prixImage: prix || null,
+      creditsBas: creditsAffiches(film.credits),
     };
   })
 );
@@ -162,46 +196,19 @@ const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || 
         </div>
 
         <div class="film-infos-bas">
-          {film.credits && (
+          {film.creditsBas.length > 0 && (
             <div class="infos-ligne">
-              {film.credits.find((c: any) => c.poste === 'Production' && c.nom) && (
+              {film.creditsBas.map((g: any) => (
                 <p class="infos-item-ligne">
-                  <span class="infos-poste">Prod.</span>
-                  <span class="infos-nom">{film.credits.find((c: any) => c.poste === 'Production').nom}</span>
+                  <span class="infos-poste">{g.label}</span>
+                  {g.noms.map((nom: string, i: number) => (
+                    <span class="infos-item">
+                      {i > 0 && <span class="sep-inline">·</span>}
+                      <span class="infos-nom">{nom}</span>
+                    </span>
+                  ))}
                 </p>
-              )}
-              {film.credits.filter((c: any) =>
-                c.nom && (
-                  c.poste === '1er assistant caméra' ||
-                  c.poste === '2ème assistant caméra' ||
-                  c.poste === '3ème assistant caméra' ||
-                  c.poste === 'Assistant Caméra'
-                )
-              ).length > 0 && (
-                <p class="infos-item-ligne">
-                  <span class="infos-poste">Ass. Cam.</span>
-                  {film.credits
-                    .filter((c: any) => c.nom && (
-                      c.poste === '1er assistant caméra' ||
-                      c.poste === '2ème assistant caméra' ||
-                      c.poste === '3ème assistant caméra' ||
-                      c.poste === 'Assistant Caméra'
-                    ))
-                    .map((c: any, i: number) => (
-                      <span class="infos-item">
-                        {i > 0 && <span class="sep-inline">·</span>}
-                        <span class="infos-nom">{c.nom}</span>
-                      </span>
-                    ))
-                  }
-                </p>
-              )}
-              {film.credits.find((c: any) => c.poste === 'Prestataires techniques' && c.nom) && (
-                <p class="infos-item-ligne">
-                  <span class="infos-poste">Prestataire</span>
-                  <span class="infos-nom">{film.credits.find((c: any) => c.poste === 'Prestataires techniques').nom}</span>
-                </p>
-              )}
+              ))}
             </div>
           )}
           {film.cameras && (
@@ -738,8 +745,10 @@ const tousLesRoles = [...new Set(filmsAvecImages.flatMap((f: any) => f.roles || 
 
   .sep-inline {
     color: var(--text-muted);
-    opacity: 0.5;
-    margin: 0 2px;
+    opacity: 0.9;
+    margin: 0 4px;
+    font-size: 16px;
+    line-height: 1;
   }
 
   .infos-row {

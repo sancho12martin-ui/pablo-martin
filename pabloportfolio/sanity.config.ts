@@ -1,7 +1,6 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
-import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list'
 import { schemaTypes } from './schemaTypes'
 
 export default defineConfig({
@@ -11,15 +10,16 @@ export default defineConfig({
   dataset: 'production',
   plugins: [
     structureTool({
-      structure: (S, context) =>
-        S.list()
+      structure: async (S, context) => {
+        const { orderableDocumentListDeskItem } = await import('@sanity/orderable-document-list')
+
+        return S.list()
           .title('Contenu')
           .items([
             orderableDocumentListDeskItem({ type: 'film', title: 'Films', S, context }),
-            orderableDocumentListDeskItem({ type: 'presse', title: 'Presse', S, context }),
-            orderableDocumentListDeskItem({ type: 'prix', title: 'Prix', S, context }),
-            orderableDocumentListDeskItem({ type: 'parcours', title: 'Parcours', S, context }),
+            orderableDocumentListDeskItem({ type: 'timeline', title: 'Timeline', S, context }),
           ])
+      },
     }),
     visionTool(),
   ],

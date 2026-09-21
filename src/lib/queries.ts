@@ -29,7 +29,8 @@ export async function getFilms() {
         "nom": select(
           defined(noms) && length(noms) > 0 => array::join(noms, " · "),
           nom
-        )
+        ),
+        "afficher": coalesce(afficher, false)
       },
       ordre
     }
@@ -64,59 +65,31 @@ export async function getFilmBySlug(slug: string) {
         "nom": select(
           defined(noms) && length(noms) > 0 => array::join(noms, " · "),
           nom
-        )
+        ),
+        "afficher": coalesce(afficher, false)
       },
     }
   `, { slug })
 }
 
-// ── PRESSE ──
-export async function getPresse() {
+// ── TIMELINE (presse + prix + parcours, ordre défini dans le Studio) ──
+export async function getTimeline() {
   return await sanityClient.fetch(`
-    *[_type == "presse"] | order(orderRank) {
+    *[_type == "timeline"] | order(orderRank asc) {
+      _id,
       "slug": slug.current,
-      date,
+      "type": rubrique,
+      titre,
       annee,
       mois,
-      "type": "presse",
-      source,
-      titre,
       description,
+      source,
       lien,
-      image
-    }
-  `)
-}
-
-// ── PRIX ──
-export async function getPrix() {
-  return await sanityClient.fetch(`
-    *[_type == "prix"] | order(orderRank) {
-      date,
-      annee,
-      mois,
-      "type": "prix",
-      titre,
+      image,
       festival,
       film,
       real,
-      description,
-      image
-    }
-  `)
-}
-
-// ── PARCOURS ──
-export async function getParcours() {
-  return await sanityClient.fetch(`
-    *[_type == "parcours"] | order(orderRank) {
-      date,
-      annee,
-      mois,
-      "type": "parcours",
       categorie,
-      titre,
-      description,
       lieu
     }
   `)

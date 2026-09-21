@@ -2,7 +2,7 @@
   "name": "pabloportfolio",
   "private": true,
   "version": "1.0.0",
-  "main": "package.json",
+  "type": "module",
   "license": "UNLICENSED",
   "scripts": {
     "build": "sanity build",
@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "@sanity/orderable-document-list": "^2.0.24",
+    "@sanity/ui": "^4.2.1",
     "@sanity/vision": "^6.15.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

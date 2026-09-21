@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
-import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list'
+import { orderRankField, orderRankOrdering } from './orderRank'
+import { makeCreditsInput } from './CreditsInput'
 
 const POSTES_STANDARD = [
   'Réalisation', 'Scénario', 'Adaptation', 'Storyboard', 'Production',
@@ -208,16 +209,18 @@ export default defineType({
       name: 'credits',
       title: '👥 Crédits — Équipe du film',
       type: 'array',
-      description: 'Ajoutez un membre par ligne. Choisissez le poste dans la liste ou tapez-en un dans "Poste personnalisé". Glissez-déposez pour réordonner.',
+      description: 'Cliquez sur « Add item » pour ajouter un membre : rien n\'est créé tant que vous n\'avez pas cliqué sur Ajouter. Glissez-déposez pour réordonner. La case ⭐ choisit les crédits visibles sous le film sur la page de garde.',
+      options: { modal: { type: 'dialog' }, disableActions: ['add'] },
+      components: { input: makeCreditsInput(POSTES_STANDARD) },
       of: [{
         type: 'object',
         title: 'Membre',
         preview: {
-          select: { title: 'poste', subtitle: 'noms' },
-          prepare({ title, subtitle }: { title?: string; subtitle?: string[] }) {
+          select: { title: 'poste', custom: 'posteCustom', subtitle: 'noms', afficher: 'afficher' },
+          prepare({ title, custom, subtitle, afficher }: any) {
             return {
-              title: title || 'Poste personnalisé',
-              subtitle: subtitle ? subtitle.join(' · ') : ''
+              title: `${afficher ? '⭐ ' : ''}${title || custom || 'Poste'}`,
+              subtitle: subtitle ? subtitle.join(' · ') : '',
             }
           }
         },
@@ -244,6 +247,13 @@ export default defineType({
             type: 'array',
             of: [{ type: 'string' }],
             description: 'Ajoutez une entrée par personne — ex: Jean Dupont.',
+          },
+          {
+            name: 'afficher',
+            title: '⭐ Afficher sous le film (page de garde)',
+            type: 'boolean',
+            description: 'Cochez pour que ce crédit apparaisse sous le film sur la page de garde.',
+            initialValue: false,
           },
         ]
       }]
