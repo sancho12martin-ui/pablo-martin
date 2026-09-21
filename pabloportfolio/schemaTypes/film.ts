@@ -37,7 +37,7 @@ export default defineType({
     }
   },
   fields: [
-    orderRankField({ type: 'film' }),
+    orderRankField({ type: 'film', newItemPosition: 'before' }),
 
     defineField({
       name: 'visible',
